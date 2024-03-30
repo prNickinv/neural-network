@@ -8,7 +8,6 @@ namespace NeuralNetwork {
 Layer::Layer(Index in_dim, Index out_dim,
              const ActivationFunction& activation_function)
     : input_vector_(Vector::Zero(in_dim)),
-      //pre_activated_vector_(Vector::Zero(in_dim)),
       pre_activated_vector_(Vector::Zero(out_dim)),
       weights_(Eigen::Rand::normal<Matrix>(out_dim, in_dim, generator_)),
       bias_(Eigen::Rand::normal<Vector>(out_dim, 1, generator_)),
@@ -19,7 +18,6 @@ Layer::Layer(Index in_dim, Index out_dim,
 Layer::Layer(Index in_dim, Index out_dim,
              ActivationFunction&& activation_function)
     : input_vector_(Vector::Zero(in_dim)),
-      //pre_activated_vector_(Vector::Zero(in_dim)),
       pre_activated_vector_(Vector::Zero(out_dim)),
       weights_(Eigen::Rand::normal<Matrix>(out_dim, in_dim, generator_)),
       bias_(Eigen::Rand::normal<Vector>(out_dim, 1, generator_)),
