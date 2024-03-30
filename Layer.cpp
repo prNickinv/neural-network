@@ -37,12 +37,8 @@ Layer::RowVector Layer::PropagateBack(const RowVector& prev_backprop_vector) {
          && "Vector from previous gradient descent step cannot be empty");
   Matrix activation_jacobian =
       activation_function_.ComputeJacobianMatrix(pre_activated_vector_);
-  //TODO: Should return ComputeNextBackpropVector(...)?
-  RowVector next_backprop_vector =
-      ComputeNextBackpropVector(prev_backprop_vector, activation_jacobian);
-
   UpdateGradients(activation_jacobian, prev_backprop_vector);
-  return next_backprop_vector;
+  return ComputeNextBackpropVector(prev_backprop_vector, activation_jacobian);
 }
 
 Layer::RowVector Layer::PropagateBackSoftMaxCE(const Vector& prev_backprop_vector) {
