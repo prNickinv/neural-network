@@ -21,8 +21,7 @@ Network::Network(
   assert(*dimensions_it > 0 && "The vector dimension must be positive");
 
   auto activation_functions_it = activation_functions.begin();
-  //Consider activation_functions_it != activation_functions.end()
-  for (; dimensions_it != dimensions.end() - 1;
+  for (; activation_functions_it != activation_functions.end();
        ++dimensions_it, ++activation_functions_it) {
     assert(*(dimensions_it + 1) > 0 && "The vector dimension must be positive");
     layers_.emplace_back(*dimensions_it, *(dimensions_it + 1),
