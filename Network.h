@@ -12,9 +12,6 @@
 
 namespace NeuralNetwork {
 
-//TODO: Remove
-enum class SoftMaxClassifier { Enable, Disable };
-
 // for regression based on error, for classification based on accuracy
 enum class EarlyStopping { Enable, Disable };
 
@@ -34,7 +31,6 @@ struct ClassificationMetrics {
 class Network {
   using Vector = Eigen::VectorXd;
   using RowVector = Eigen::RowVectorXd;
-  using Matrix = Eigen::MatrixXd;
   using Index = Eigen::Index;
   using Layers = std::vector<Layer>;
 
