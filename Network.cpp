@@ -115,15 +115,6 @@ void Network::TrainEpoch(const Vectors& training_inputs,
   }
 }
 
-//TODO: Remove the function
-Network::Vector Network::PushForward(const Vector& input_vector) {
-  Vector output_vector = input_vector;
-  for (auto& layer : layers_) {
-    output_vector = layer.PushForward(output_vector);
-  }
-  return output_vector;
-}
-
 Network::RowVector Network::ProceedOutputLayer(
     const Vector& predicted_vector, const Vector& target_vector,
     const LossFunction& loss_function, Task task) {
