@@ -22,4 +22,3 @@ add_executable(neural-network main.cpp
         Except.cpp
         MnistTest.cpp)
 target_link_libraries(neural-network Eigen3::Eigen)
-
