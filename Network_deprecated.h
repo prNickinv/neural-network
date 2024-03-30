@@ -16,7 +16,7 @@
 namespace NeuralNetwork {
 
 template<typename ActivationFunctionType, typename LossFunctionType>
-class Network {
+class Network_deprecated {
   using Layers = std::vector<Layer_deprecated>;
   using IteratingOrder = std::vector<int>;
   using LossFunctionDerivative = std::function<Eigen::RowVectorXd(
@@ -38,7 +38,7 @@ class Network {
       std::vector<std::pair<Eigen::VectorXd, Eigen::VectorXd>>;
 
   //dimensions.size() - 1 because the last dimension is of the output vector
-  Network(const Dimensions& dimensions, LearningRate learning_rate,
+  Network_deprecated(const Dimensions& dimensions, LearningRate learning_rate,
           BatchSize batch_size, EpochsNumber epochs_number)
       : dimensions_(dimensions),
         layers_(dimensions_.size() - 1),
@@ -66,7 +66,7 @@ class Network {
     RegularNode::SetCoefficientFunction(learning_rate, batch_size);
   }
 
-  Network(Dimensions&& dimensions, LearningRate learning_rate,
+  Network_deprecated(Dimensions&& dimensions, LearningRate learning_rate,
           BatchSize batch_size, EpochsNumber epochs_number)
       : dimensions_(std::move(dimensions)),
         layers_(dimensions_.size() - 1),

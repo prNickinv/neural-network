@@ -10,16 +10,16 @@
 
 namespace NeuralNetwork {
 
-class Layer {
+class Layer_deprecated {
  public:
   using SizeType = int;
   using SampleVector = Eigen::VectorXd;
   using BackPropVector = Eigen::RowVectorXd;
   using JacobianMatrix = Eigen::MatrixXd;
 
-  Layer();
+  Layer_deprecated();
 
-  Layer(SizeType, SizeType);
+  Layer_deprecated(SizeType, SizeType);
 
   void SetInputVector(const SampleVector&);
 
