@@ -1,3 +1,9 @@
 [submodule "third-party-library/eigen"]
 	path = third-party-library/eigen
 	url = https://gitlab.com/libeigen/eigen.git
+[submodule "third-party-library/EigenRand"]
+	path = third-party-library/EigenRand
+	url = https://github.com/bab2min/EigenRand.git
+[submodule "mnist-fashion"]
+	path = mnist-fashion
+	url = https://github.com/ArthurSonzogni/mnist-fashion.git

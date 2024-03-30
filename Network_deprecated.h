@@ -11,13 +11,13 @@
 
 #include <Eigen/Dense>
 
-#include "Layer.h"
+#include "Layer_deprecated.h"
 
 namespace NeuralNetwork {
 
 template<typename ActivationFunctionType, typename LossFunctionType>
 class Network {
-  using Layers = std::vector<Layer>;
+  using Layers = std::vector<Layer_deprecated>;
   using IteratingOrder = std::vector<int>;
   using LossFunctionDerivative = std::function<Eigen::RowVectorXd(
       const Eigen::VectorXd&, const Eigen::VectorXd&)>;
@@ -57,7 +57,7 @@ class Network {
     for (int i = 0; i != layers_.size(); ++i) {
       assert(dimensions_[i] > 0 && dimensions_[i + 1] > 0
              && "The vector dimension cannot be non-positive");
-      layers_[i] = Layer(dimensions_[i], dimensions_[i + 1]);
+      layers_[i] = Layer_deprecated(dimensions_[i], dimensions_[i + 1]);
     }
 
     ActivatedNode::SetActivationFunction(ActivationFunctionType().Activate());
@@ -85,7 +85,7 @@ class Network {
     for (int i = 0; i != layers_.size(); ++i) {
       assert(dimensions_[i] > 0 && dimensions_[i + 1] > 0
              && "The vector dimension cannot be non-positive");
-      layers_[i] = Layer(dimensions_[i], dimensions_[i + 1]);
+      layers_[i] = Layer_deprecated(dimensions_[i], dimensions_[i + 1]);
     }
 
     ActivatedNode::SetActivationFunction(ActivationFunctionType().Activate());
