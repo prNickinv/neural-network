@@ -15,6 +15,7 @@ void View::ShuffleViewVector(std::vector<int>& view_vector) {
   std::shuffle(view_vector.begin(), view_vector.end(), gen_);
 }
 
+// TODO: NOLINT to suppress clang-tidy warning ?
 std::mt19937_64 View::gen_{rand_seed_};
 
 } // namespace NeuralNetwork
