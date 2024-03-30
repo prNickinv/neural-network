@@ -4,6 +4,8 @@
 #include "LossFunction.h"
 #include "Network.h"
 
+// Since mnist does not provide validation data, we use test data for validation purposes
+
 namespace NeuralNetwork::MnistTest {
 
 void RunMnistTest(Data::MnistType mnist_type,
