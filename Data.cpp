@@ -18,7 +18,7 @@ Vector GenerateOneHotVector(unsigned char target, Index classes) {
 Vectors GenerateTargets(const std::vector<unsigned char>& labels,
                         Index classes) {
   assert(classes > 0 && "Number of classes must be positive!");
-  assert(!labels.empty() && "No labels provided!");
+  //assert(!labels.empty() && "No labels provided!");
   Vectors targets(labels.size());
   for (int i = 0; i != labels.size(); ++i) {
     targets[i] = GenerateOneHotVector(labels[i], classes);
@@ -28,7 +28,7 @@ Vectors GenerateTargets(const std::vector<unsigned char>& labels,
 
 Vectors GenerateInputVectors(
     const std::vector<std::vector<unsigned char>>& inputs) {
-  assert(!inputs.empty() && "No inputs provided!");
+  //assert(!inputs.empty() && "No inputs provided!");
   Vectors input_vectors(inputs.size());
   for (int i = 0; i != inputs.size(); ++i) {
     input_vectors[i] = Vector::Zero(inputs[i].size());

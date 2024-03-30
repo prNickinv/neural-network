@@ -53,6 +53,9 @@ class Network {
              const LossFunction&, Task = Task::Unspecified);
 
   Vector Predict(const Vector&);
+  double TestLoss(const Vectors&, const Vectors&, const LossFunction&);
+  ClassificationMetrics TestAccuracy(const Vectors&, const Vectors&,
+                                     const LossFunction&);
 
  private:
   void TrainEpoch(const Vectors&, const Vectors&, int, double, double,
@@ -64,10 +67,6 @@ class Network {
 
   bool Validate(const Vectors&, const Vectors&, const LossFunction&, int, Task,
                 EarlyStopping, double);
-  //TODO: Make public?
-  double TestLoss(const Vectors&, const Vectors&, const LossFunction&);
-  ClassificationMetrics TestAccuracy(const Vectors&, const Vectors&,
-                                     const LossFunction&);
 
   Layers layers_;
 };

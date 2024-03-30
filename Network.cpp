@@ -98,6 +98,37 @@ Network::Vector Network::Predict(const Vector& input_vector) {
   return output_vector;
 }
 
+double Network::TestLoss(const Vectors& test_inputs,
+                         const Vectors& test_targets,
+                         const LossFunction& loss_function) {
+  double loss = 0.0;
+  for (int i = 0; i != test_inputs.size(); ++i) {
+    Vector predicted_vector = Predict(test_inputs[i]);
+    loss += loss_function.ComputeLoss(predicted_vector, test_targets[i]);
+  }
+  //TODO: static_cast<double>(test_inputs.size()) ? Clang-tidy
+  return loss / test_inputs.size();
+}
+
+ClassificationMetrics Network::TestAccuracy(const Vectors& test_inputs,
+                                            const Vectors& test_targets,
+                                            const LossFunction& loss_function) {
+  double loss = 0.0;
+  int correct_predictions = 0;
+  for (int i = 0; i != test_inputs.size(); ++i) {
+    Vector predicted_vector = Predict(test_inputs[i]);
+    loss += loss_function.ComputeLoss(predicted_vector, test_targets[i]);
+
+    Index predicted_value, target;
+    predicted_vector.maxCoeff(&predicted_value);
+    test_targets[i].maxCoeff(&target);
+    if (predicted_value == target) {
+      ++correct_predictions;
+    }
+  }
+  return {loss / test_inputs.size(), correct_predictions};
+}
+
 void Network::TrainEpoch(const Vectors& training_inputs,
                          const Vectors& training_targets, int batch_size,
                          double learning_rate, double weights_decay,
@@ -171,37 +202,6 @@ bool Network::Validate(const Vectors& test_inputs, const Vectors& test_targets,
     return true;
   }
   return false;
-}
-
-double Network::TestLoss(const Vectors& test_inputs,
-                         const Vectors& test_targets,
-                         const LossFunction& loss_function) {
-  double loss = 0.0;
-  for (int i = 0; i != test_inputs.size(); ++i) {
-    Vector predicted_vector = Predict(test_inputs[i]);
-    loss += loss_function.ComputeLoss(predicted_vector, test_targets[i]);
-  }
-  //TODO: static_cast<double>(test_inputs.size()) ? Clang-tidy
-  return loss / test_inputs.size();
-}
-
-ClassificationMetrics Network::TestAccuracy(const Vectors& test_inputs,
-                                            const Vectors& test_targets,
-                                            const LossFunction& loss_function) {
-  double loss = 0.0;
-  int correct_predictions = 0;
-  for (int i = 0; i != test_inputs.size(); ++i) {
-    Vector predicted_vector = Predict(test_inputs[i]);
-    loss += loss_function.ComputeLoss(predicted_vector, test_targets[i]);
-
-    Index predicted_value, target;
-    predicted_vector.maxCoeff(&predicted_value);
-    test_targets[i].maxCoeff(&target);
-    if (predicted_value == target) {
-      ++correct_predictions;
-    }
-  }
-  return {loss / test_inputs.size(), correct_predictions};
 }
 
 } // namespace NeuralNetwork
