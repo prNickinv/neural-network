@@ -29,7 +29,8 @@ class Layer {
   //TODO: Remove [[nodiscard]]?
   [[nodiscard]] Vector ApplyActivation() const;
 
-  [[nodiscard]] RowVector ComputeNextBackpropVector(const RowVector&, const Matrix&) const;
+  [[nodiscard]] RowVector ComputeNextBackpropVector(const RowVector&,
+                                                    const Matrix&) const;
   void UpdateGradients(const Matrix&, const RowVector&);
 
   static constexpr int random_seed_{42};

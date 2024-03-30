@@ -41,15 +41,17 @@ Layer::RowVector Layer::PropagateBack(const RowVector& prev_backprop_vector) {
   return ComputeNextBackpropVector(prev_backprop_vector, activation_jacobian);
 }
 
-Layer::RowVector Layer::PropagateBackSoftMaxCE(const Vector& prev_backprop_vector) {
+Layer::RowVector Layer::PropagateBackSoftMaxCE(
+    const Vector& prev_backprop_vector) {
   bias_gradient_ += prev_backprop_vector;
   weights_gradient_ += prev_backprop_vector * input_vector_.transpose();
   return prev_backprop_vector.transpose() * weights_;
 }
 
-void Layer::UpdateParameters(int batch_size, double learning_rate, double weights_decay) {
-  weights_ -=
-      (learning_rate / batch_size) * weights_gradient_ + (2 * weights_decay * learning_rate / batch_size) * weights_;
+void Layer::UpdateParameters(int batch_size, double learning_rate,
+                             double weights_decay) {
+  weights_ -= (learning_rate / batch_size) * weights_gradient_
+      + (2 * weights_decay * learning_rate / batch_size) * weights_;
   bias_ -= (learning_rate / batch_size) * bias_gradient_;
   weights_gradient_.setZero();
   bias_gradient_.setZero();
@@ -73,7 +75,8 @@ Layer::RowVector Layer::ComputeNextBackpropVector(
 
 void Layer::UpdateGradients(const Matrix& activation_jacobian,
                             const RowVector& prev_backprop_vector) {
-  Vector transit_vector = activation_jacobian * prev_backprop_vector.transpose();
+  Vector transit_vector =
+      activation_jacobian * prev_backprop_vector.transpose();
   bias_gradient_ += transit_vector;
   weights_gradient_ += transit_vector * input_vector_.transpose();
 }
