@@ -56,7 +56,7 @@ class Network {
  private:
   void TrainEpoch(const Vectors&, const Vectors&, int, double, double,
                   const LossFunction&, Task, const std::vector<int>&);
-  RowVector ProceedOutputLayer(const Vector&, const Vector&,
+  RowVector ProcessOutputLayer(const Vector&, const Vector&,
                                const LossFunction&, Task);
   void PropagateBack(const RowVector&);
   void UpdateBatchParameters(int, double, double);

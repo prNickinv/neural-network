@@ -137,7 +137,7 @@ void Network::TrainEpoch(const Vectors& training_inputs,
     for (int j = i; j != i + batch_size; ++j) {
       Vector predicted_vector = Predict(training_inputs[view_vector[j]]);
       RowVector output_backprop_vector =
-          ProceedOutputLayer(predicted_vector, training_targets[view_vector[j]],
+          ProcessOutputLayer(predicted_vector, training_targets[view_vector[j]],
                              loss_function, task);
       PropagateBack(output_backprop_vector);
     }
@@ -145,7 +145,7 @@ void Network::TrainEpoch(const Vectors& training_inputs,
   }
 }
 
-Network::RowVector Network::ProceedOutputLayer(
+Network::RowVector Network::ProcessOutputLayer(
     const Vector& predicted_vector, const Vector& target_vector,
     const LossFunction& loss_function, Task task) {
   if (task == Task::SoftMaxCEClassification) {
