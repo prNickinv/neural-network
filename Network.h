@@ -2,6 +2,7 @@
 #define NETWORK_H
 
 #include <initializer_list>
+#include <iostream>
 #include <vector>
 
 #include <Eigen/Dense>
@@ -52,6 +53,8 @@ class Network {
   double TestLoss(const Vectors&, const Vectors&, const LossFunction&);
   ClassificationMetrics TestAccuracy(const Vectors&, const Vectors&,
                                      const LossFunction&);
+
+  friend std::ostream& operator<<(std::ostream&, const Network&);
 
  private:
   void TrainEpoch(const Vectors&, const Vectors&, int, double, double,

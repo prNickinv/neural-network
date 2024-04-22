@@ -1,6 +1,8 @@
 #ifndef LAYER_H
 #define LAYER_H
 
+#include <iostream>
+
 #include <Eigen/Dense>
 #include <EigenRand/EigenRand>
 
@@ -23,6 +25,8 @@ class Layer {
   [[nodiscard]] RowVector PropagateBack(const RowVector&);
   RowVector PropagateBackSoftMaxCE(const Vector&);
   void UpdateParameters(int, double, double);
+
+  friend std::ostream& operator<<(std::ostream&, const Layer&);
 
  private:
   [[nodiscard]] Vector ApplyParameters(const Vector&) const;

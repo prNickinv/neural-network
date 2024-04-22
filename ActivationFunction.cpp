@@ -8,17 +8,20 @@ namespace NeuralNetwork {
 
 ActivationFunction::ActivationFunction(
     const VecToVecFunc& activation_function,
-    const VecToMatFunc& derivative_of_activation)
+    const VecToMatFunc& derivative_of_activation, ActivationFunctionType type)
     : activation_function_(activation_function),
-      derivative_of_activation_(derivative_of_activation) {
+      derivative_of_activation_(derivative_of_activation),
+      type_(type) {
   assert(activation_function_ && "Activation function cannot be empty");
   assert(derivative_of_activation_ && "Activation derivative cannot be empty");
 }
 
 ActivationFunction::ActivationFunction(VecToVecFunc&& activation_function,
-                                       VecToMatFunc&& derivative_of_activation)
+                                       VecToMatFunc&& derivative_of_activation,
+                                       ActivationFunctionType type)
     : activation_function_(std::move(activation_function)),
-      derivative_of_activation_(std::move(derivative_of_activation)) {
+      derivative_of_activation_(std::move(derivative_of_activation)),
+      type_(type) {
   assert(activation_function_ && "Activation function cannot be empty");
   assert(derivative_of_activation_ && "Activation derivative cannot be empty");
 }
@@ -49,6 +52,19 @@ bool ActivationFunction::IsActivationDerivativeEmpty() const {
   return !derivative_of_activation_;
 }
 
+std::string ActivationFunction::GetType() const {
+  switch (type_) {
+    case ActivationFunctionType::Sigmoid: return "Sigmoid";
+    case ActivationFunctionType::SigmoidUnstable: return "SigmoidUnstable";
+    case ActivationFunctionType::Tanh: return "Tanh";
+    case ActivationFunctionType::ReLu: return "ReLu";
+    case ActivationFunctionType::LeakyReLu: return "LeakyReLu";
+    case ActivationFunctionType::SoftMax: return "SoftMax";
+    case ActivationFunctionType::SoftMaxUnstable: return "SoftMaxUnstable";
+    default: return "Custom";
+  }
+}
+
 ActivationFunction ActivationFunction::Sigmoid() {
   DoubleToDoubleFunc elwise_sigmoid{[](double x) {
     return x >= 0.0 ? 1.0 / (1.0 + std::exp(-x))
@@ -68,7 +84,7 @@ ActivationFunction ActivationFunction::Sigmoid() {
     return input_vector.unaryExpr(elwise_derivative_of_sigmoid).asDiagonal();
   }};
 
-  return {sigmoid, derivative_of_sigmoid};
+  return {sigmoid, derivative_of_sigmoid, ActivationFunctionType::Sigmoid};
 }
 
 ActivationFunction ActivationFunction::SigmoidUnstable() {
@@ -89,7 +105,8 @@ ActivationFunction ActivationFunction::SigmoidUnstable() {
     return input_vector.unaryExpr(elwise_derivative_of_sigmoid).asDiagonal();
   }};
 
-  return {sigmoid, derivative_of_sigmoid};
+  return {sigmoid, derivative_of_sigmoid,
+          ActivationFunctionType::SigmoidUnstable};
 }
 
 ActivationFunction ActivationFunction::Tanh() {
@@ -110,7 +127,7 @@ ActivationFunction ActivationFunction::Tanh() {
         return input_vector.unaryExpr(elwise_derivative_of_tanh).asDiagonal();
       }};
 
-  return {tanh, derivative_of_tanh};
+  return {tanh, derivative_of_tanh, ActivationFunctionType::Tanh};
 }
 
 ActivationFunction ActivationFunction::ReLu() {
@@ -123,7 +140,7 @@ ActivationFunction ActivationFunction::ReLu() {
         .asDiagonal();
   }};
 
-  return {relu, derivative_of_relu};
+  return {relu, derivative_of_relu, ActivationFunctionType::ReLu};
 }
 
 ActivationFunction ActivationFunction::LeakyReLu(double slope) {
@@ -138,7 +155,8 @@ ActivationFunction ActivationFunction::LeakyReLu(double slope) {
         .asDiagonal();
   }};
 
-  return {leaky_relu, derivative_of_leaky_relu};
+  return {leaky_relu, derivative_of_leaky_relu,
+          ActivationFunctionType::LeakyReLu};
 }
 
 ActivationFunction ActivationFunction::SoftMax() {
@@ -154,7 +172,7 @@ ActivationFunction ActivationFunction::SoftMax() {
     return jacobian_matrix;
   }};
 
-  return {softmax, derivative_of_softmax};
+  return {softmax, derivative_of_softmax, ActivationFunctionType::SoftMax};
 }
 
 ActivationFunction ActivationFunction::SoftMaxUnstable() {
@@ -171,7 +189,8 @@ ActivationFunction ActivationFunction::SoftMaxUnstable() {
     return jacobian_matrix;
   }};
 
-  return {softmax_unstable, derivative_of_softmax_unstable};
+  return {softmax_unstable, derivative_of_softmax_unstable,
+          ActivationFunctionType::SoftMaxUnstable};
 }
 
 } // namespace NeuralNetwork

@@ -2,10 +2,22 @@
 #define ACTIVATIONFUNCTION_H
 
 #include <functional>
+#include <string>
 
 #include <Eigen/Dense>
 
 namespace NeuralNetwork {
+
+enum class ActivationFunctionType {
+  Sigmoid,
+  SigmoidUnstable,
+  Tanh,
+  ReLu,
+  LeakyReLu,
+  SoftMax,
+  SoftMaxUnstable,
+  Custom
+};
 
 class ActivationFunction {
   using Vector = Eigen::VectorXd;
@@ -16,8 +28,10 @@ class ActivationFunction {
   using DoubleToDoubleFunc = std::function<double(double)>;
 
  public:
-  ActivationFunction(const VecToVecFunc&, const VecToMatFunc&);
-  ActivationFunction(VecToVecFunc&&, VecToMatFunc&&);
+  ActivationFunction(const VecToVecFunc&, const VecToMatFunc&,
+                     ActivationFunctionType = ActivationFunctionType::Custom);
+  ActivationFunction(VecToVecFunc&&, VecToMatFunc&&,
+                     ActivationFunctionType = ActivationFunctionType::Custom);
 
   [[nodiscard]] Vector Activate(const Vector&) const;
   [[nodiscard]] Matrix ComputeJacobianMatrix(const Vector&) const;
@@ -26,6 +40,8 @@ class ActivationFunction {
   //TODO: Mark //NOLINT to suppress clang-tidy warning?
   bool IsActivationFunctionEmpty() const;
   bool IsActivationDerivativeEmpty() const;
+
+  [[nodiscard]] std::string GetType() const;
 
   static ActivationFunction Sigmoid();
   static ActivationFunction SigmoidUnstable();
@@ -38,6 +54,7 @@ class ActivationFunction {
  private:
   VecToVecFunc activation_function_;
   VecToMatFunc derivative_of_activation_;
+  ActivationFunctionType type_;
 };
 
 } // namespace NeuralNetwork

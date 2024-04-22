@@ -1,7 +1,6 @@
 #include "Network.h"
 
 #include <cassert>
-#include <iostream>
 
 #include "View.h"
 
@@ -126,6 +125,14 @@ ClassificationMetrics Network::TestAccuracy(const Vectors& test_inputs,
     }
   }
   return {loss / test_inputs.size(), correct_predictions};
+}
+
+std::ostream& operator<<(std::ostream& os, const Network& network) {
+  os << network.layers_.size() << std::endl;
+  for (const auto& layer : network.layers_) {
+    os << layer;
+  }
+  return os;
 }
 
 void Network::TrainEpoch(const Vectors& training_inputs,

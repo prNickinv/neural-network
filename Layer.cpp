@@ -57,6 +57,15 @@ void Layer::UpdateParameters(int batch_size, double learning_rate,
   bias_gradient_.setZero();
 }
 
+std::ostream& operator<<(std::ostream& os, const Layer& layer) {
+  os << layer.weights_.rows() << " " << layer.weights_.cols() << std::endl;
+  os << layer.weights_ << std::endl;
+  os << layer.bias_.size() << std::endl;
+  os << layer.bias_ << std::endl;
+  os << layer.activation_function_.GetType() << std::endl;
+  return os;
+}
+
 Layer::Vector Layer::ApplyParameters(const Vector& input_vector) const {
   assert(input_vector.size() != 0);
   return weights_ * input_vector + bias_;
