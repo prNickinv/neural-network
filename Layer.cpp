@@ -66,6 +66,31 @@ std::ostream& operator<<(std::ostream& os, const Layer& layer) {
   return os;
 }
 
+std::istream& operator>>(std::istream& is, Layer& layer) {
+  Layer::Index weights_rows, weights_cols;
+  is >> weights_rows >> weights_cols;
+  layer.weights_.resize(weights_rows, weights_cols);
+  layer.weights_gradient_ = Layer::Matrix::Zero(weights_rows, weights_cols);
+  for (Layer::Index i = 0; i != weights_rows; ++i) {
+    for (Layer::Index j = 0; j != weights_cols; ++j) {
+      is >> layer.weights_(i, j);
+    }
+  }
+
+  Layer::Index bias_size;
+  is >> bias_size;
+  layer.bias_.resize(bias_size);
+  layer.bias_gradient_ = Layer::Vector::Zero(bias_size);
+  for (Layer::Index i = 0; i != bias_size; ++i) {
+    is >> layer.bias_(i);
+  }
+
+  std::string activation_type;
+  is >> activation_type;
+  layer.activation_function_ = ActivationFunction::GetFunction(activation_type);
+  return is;
+}
+
 Layer::Vector Layer::ApplyParameters(const Vector& input_vector) const {
   assert(input_vector.size() != 0);
   return weights_ * input_vector + bias_;

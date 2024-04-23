@@ -38,6 +38,7 @@ class Network {
  public:
   using Vectors = std::vector<Vector>;
 
+  Network() = default;
   Network(std::initializer_list<Index>,
           std::initializer_list<ActivationFunction>);
 
@@ -55,6 +56,7 @@ class Network {
                                      const LossFunction&);
 
   friend std::ostream& operator<<(std::ostream&, const Network&);
+  friend std::istream& operator>>(std::istream&, Network&);
 
  private:
   void TrainEpoch(const Vectors&, const Vectors&, int, double, double,

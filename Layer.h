@@ -18,6 +18,7 @@ class Layer {
   using RandomGenerator = Eigen::Rand::P8_mt19937_64;
 
  public:
+  Layer() = default;
   Layer(Index, Index, const ActivationFunction&);
   Layer(Index, Index, ActivationFunction&&);
 
@@ -27,6 +28,7 @@ class Layer {
   void UpdateParameters(int, double, double);
 
   friend std::ostream& operator<<(std::ostream&, const Layer&);
+  friend std::istream& operator>>(std::istream&, Layer&);
 
  private:
   [[nodiscard]] Vector ApplyParameters(const Vector&) const;

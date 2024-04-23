@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <cmath>
+#include <stdexcept>
 #include <utility>
 
 namespace NeuralNetwork {
@@ -62,6 +63,26 @@ std::string ActivationFunction::GetType() const {
     case ActivationFunctionType::SoftMax: return "SoftMax";
     case ActivationFunctionType::SoftMaxUnstable: return "SoftMaxUnstable";
     default: return "Custom";
+  }
+}
+
+ActivationFunction ActivationFunction::GetFunction(const std::string& type) {
+  if (type == "Sigmoid") {
+    return Sigmoid();
+  } else if (type == "SigmoidUnstable") {
+    return SigmoidUnstable();
+  } else if (type == "Tanh") {
+    return Tanh();
+  } else if (type == "ReLu") {
+    return ReLu();
+  } else if (type == "LeakyReLu") {
+    return LeakyReLu();
+  } else if (type == "SoftMax") {
+    return SoftMax();
+  } else if (type == "SoftMaxUnstable") {
+    return SoftMaxUnstable();
+  } else {
+    throw std::invalid_argument("Unknown activation function type");
   }
 }
 

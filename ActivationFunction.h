@@ -28,6 +28,7 @@ class ActivationFunction {
   using DoubleToDoubleFunc = std::function<double(double)>;
 
  public:
+  ActivationFunction() = default;
   ActivationFunction(const VecToVecFunc&, const VecToMatFunc&,
                      ActivationFunctionType = ActivationFunctionType::Custom);
   ActivationFunction(VecToVecFunc&&, VecToMatFunc&&,
@@ -42,6 +43,7 @@ class ActivationFunction {
   bool IsActivationDerivativeEmpty() const;
 
   [[nodiscard]] std::string GetType() const;
+  static ActivationFunction GetFunction(const std::string&);
 
   static ActivationFunction Sigmoid();
   static ActivationFunction SigmoidUnstable();
@@ -54,7 +56,7 @@ class ActivationFunction {
  private:
   VecToVecFunc activation_function_;
   VecToMatFunc derivative_of_activation_;
-  ActivationFunctionType type_;
+  ActivationFunctionType type_ = ActivationFunctionType::Custom;
 };
 
 } // namespace NeuralNetwork

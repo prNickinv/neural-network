@@ -135,6 +135,16 @@ std::ostream& operator<<(std::ostream& os, const Network& network) {
   return os;
 }
 
+std::istream& operator>>(std::istream& is, Network& network) {
+  Network::Index layers_size;
+  is >> layers_size;
+  network.layers_.resize(layers_size);
+  for (auto& layer : network.layers_) {
+    is >> layer;
+  }
+  return is;
+}
+
 void Network::TrainEpoch(const Vectors& training_inputs,
                          const Vectors& training_targets, int batch_size,
                          double learning_rate, double weights_decay,
