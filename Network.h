@@ -41,6 +41,9 @@ class Network {
   Network() = default;
   Network(std::initializer_list<Index>,
           std::initializer_list<ActivationFunction>);
+  explicit Network(std::istream&);
+  // In case of custom activation functions
+  Network(std::istream&, std::initializer_list<ActivationFunction>);
 
   void Train(const Vectors&, const Vectors&, const Vectors&, const Vectors&,
              int, double, double, int, const LossFunction&,

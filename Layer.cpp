@@ -25,6 +25,38 @@ Layer::Layer(Index in_dim, Index out_dim,
       weights_gradient_(Matrix::Zero(out_dim, in_dim)),
       bias_gradient_(Vector::Zero(out_dim)) {}
 
+Layer::Layer(std::istream& is, const ActivationFunction& activation_function) {
+  Index weights_rows, weights_cols;
+  is >> weights_rows >> weights_cols;
+
+  input_vector_ = Vector::Zero(weights_cols);
+  pre_activated_vector_ = Vector::Zero(weights_rows);
+
+  weights_ = Matrix::Zero(weights_rows, weights_cols);
+  weights_gradient_ = Matrix::Zero(weights_rows, weights_cols);
+  for (Index i = 0; i != weights_rows; ++i) {
+    for (Index j = 0; j != weights_cols; ++j) {
+      is >> weights_(i, j);
+    }
+  }
+
+  Index bias_size;
+  is >> bias_size;
+  bias_ = Vector::Zero(bias_size);
+  bias_gradient_ = Vector::Zero(bias_size);
+  for (Index i = 0; i != bias_size; ++i) {
+    is >> bias_(i);
+  }
+
+  std::string activation_type;
+  is >> activation_type;
+  if (activation_function) {
+    activation_function_ = activation_function;
+  } else {
+    activation_function_ = ActivationFunction::GetFunction(activation_type);
+  }
+}
+
 Layer::Vector Layer::PushForward(const Vector& input_vector) {
   assert(input_vector.size() != 0 && "Input vector cannot be empty");
   input_vector_ = input_vector;
@@ -68,6 +100,7 @@ std::ostream& operator<<(std::ostream& os, const Layer& layer) {
 
 std::istream& operator>>(std::istream& is, Layer& layer) {
   Layer::Index weights_rows, weights_cols;
+  // TODO: Initialize input_vector_ and pre_activated_vector_ with zeros?
   is >> weights_rows >> weights_cols;
   layer.weights_.resize(weights_rows, weights_cols);
   layer.weights_gradient_ = Layer::Matrix::Zero(weights_rows, weights_cols);

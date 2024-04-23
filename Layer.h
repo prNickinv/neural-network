@@ -21,6 +21,8 @@ class Layer {
   Layer() = default;
   Layer(Index, Index, const ActivationFunction&);
   Layer(Index, Index, ActivationFunction&&);
+  explicit Layer(std::istream&,
+                 const ActivationFunction& = ActivationFunction());
 
   [[nodiscard]] Vector PushForward(const Vector&);
   [[nodiscard]] RowVector PropagateBack(const RowVector&);

@@ -28,6 +28,29 @@ Network::Network(
   }
 }
 
+Network::Network(std::istream& is) {
+  int layers_size;
+  is >> layers_size;
+  layers_.reserve(layers_size);
+  for (int i = 0; i != layers_size; ++i) {
+    layers_.emplace_back(is);
+  }
+}
+
+Network::Network(
+    std::istream& is,
+    std::initializer_list<ActivationFunction> activation_functions) {
+  int layers_size;
+  is >> layers_size;
+  assert(layers_size == activation_functions.size()
+         && "Incorrect number of layers and activation functions");
+  layers_.reserve(layers_size);
+  auto activation_functions_it = activation_functions.begin();
+  for (int i = 0; i != layers_size; ++i, ++activation_functions_it) {
+    layers_.emplace_back(is, *activation_functions_it);
+  }
+}
+
 void Network::Train(const Vectors& training_inputs,
                     const Vectors& training_targets,
                     const Vectors& validation_inputs,
@@ -136,7 +159,7 @@ std::ostream& operator<<(std::ostream& os, const Network& network) {
 }
 
 std::istream& operator>>(std::istream& is, Network& network) {
-  Network::Index layers_size;
+  int layers_size;
   is >> layers_size;
   network.layers_.resize(layers_size);
   for (auto& layer : network.layers_) {
