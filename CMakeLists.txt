@@ -6,9 +6,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 list(APPEND CMAKE_PREFIX_PATH third-party-library/eigen mnist-fashion)
 find_package(Eigen3 3.4 NO_MODULE)
-if(NOT Eigen3_FOUND)
+if (NOT Eigen3_FOUND)
     include_directories(${CMAKE_SOURCE_DIR}/third-party-library/eigen/)
-endif()
+endif ()
 include_directories(third-party-library/EigenRand)
 
 find_package(MNIST)
@@ -25,6 +25,6 @@ add_executable(neural-network main.cpp
         Except.cpp
         MnistTest.cpp)
 
-if(Eigen3_FOUND)
+if (Eigen3_FOUND)
     target_link_libraries(neural-network Eigen3::Eigen)
-endif()
+endif ()
