@@ -8,3 +8,6 @@
 [submodule "mnist-fashion"]
 	path = mnist-fashion
 	url = https://github.com/ArthurSonzogni/mnist-fashion.git
+[submodule "tests/googletest"]
+	path = tests/googletest
+	url = https://github.com/google/googletest.git
