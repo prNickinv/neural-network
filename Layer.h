@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <string>
+#include <variant>
 
 #include <Eigen/Dense>
 #include <EigenRand/EigenRand>
@@ -13,9 +14,8 @@
 
 namespace NeuralNetwork {
 
-enum class Optimizer { MiniBatchGD, AdamW };
-
 class Layer {
+  using Optimizer = std::variant<std::monostate, AdamWOptimizer>;
   using RandomGenerator = Eigen::Rand::P8_mt19937_64;
 
  public:
@@ -30,7 +30,13 @@ class Layer {
   RowVector PropagateBackSoftMaxCE(const Vector&);
   void UpdateParameters(int, double, double);
 
-  void SetOptimizer(Optimizer);
+  template<typename OptimizerType>
+  void SetOptimizer(const OptimizerType& optimizer) {
+    optimizer_ = optimizer;
+    std::get<OptimizerType>(optimizer_)
+        .Resize(weights_.rows(), weights_.cols());
+  }
+
   friend std::ostream& operator<<(std::ostream&, const Layer&);
   friend std::istream& operator>>(std::istream&, Layer&);
 
@@ -64,8 +70,7 @@ class Layer {
   Matrix weights_gradient_;
   Vector bias_gradient_;
 
-  Optimizer optimizer_{Optimizer::AdamW};
-  AdamWOptimizer adam_w_opt_;
+  Optimizer optimizer_;
 };
 
 } // namespace NeuralNetwork

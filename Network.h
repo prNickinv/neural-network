@@ -40,7 +40,13 @@ class Network {
   // In case of custom activation functions
   Network(std::istream&, std::initializer_list<ActivationFunction>);
 
-  void SetOptimizer(Optimizer);
+  template<typename OptimizerType>
+  void SetOptimizer(const OptimizerType& optimizer) {
+    for (auto& layer : layers_) {
+      layer.SetOptimizer(optimizer);
+    }
+  }
+
   void Train(const Vectors&, const Vectors&, const Vectors&, const Vectors&,
              int, double, double, int, const LossFunction&,
              Task = Task::Unspecified, EarlyStopping = EarlyStopping::Disable,

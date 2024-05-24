@@ -1,6 +1,8 @@
 #include "Network.h"
 
 #include <cassert>
+#include <iomanip>
+#include <limits>
 
 #include "View.h"
 
@@ -48,12 +50,6 @@ Network::Network(
   auto activation_functions_it = activation_functions.begin();
   for (int i = 0; i != layers_size; ++i, ++activation_functions_it) {
     layers_.emplace_back(is, *activation_functions_it);
-  }
-}
-
-void Network::SetOptimizer(Optimizer optimizer) {
-  for (auto& layer : layers_) {
-    layer.SetOptimizer(optimizer);
   }
 }
 
@@ -157,6 +153,7 @@ ClassificationMetrics Network::TestAccuracy(const Vectors& test_inputs,
 }
 
 std::ostream& operator<<(std::ostream& os, const Network& network) {
+  os << std::fixed << std::setprecision(std::numeric_limits<double>::digits10);
   os << network.layers_.size() << std::endl;
   for (const auto& layer : network.layers_) {
     os << layer;

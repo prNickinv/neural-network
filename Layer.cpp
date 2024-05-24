@@ -14,7 +14,7 @@ Layer::Layer(Index in_dim, Index out_dim,
       activation_function_(activation_function),
       weights_gradient_(Matrix::Zero(out_dim, in_dim)),
       bias_gradient_(Vector::Zero(out_dim)),
-      adam_w_opt_(in_dim, out_dim) {}
+      optimizer_(std::monostate()) {}
 
 Layer::Layer(Index in_dim, Index out_dim,
              ActivationFunction&& activation_function)
@@ -24,7 +24,8 @@ Layer::Layer(Index in_dim, Index out_dim,
       bias_(Eigen::Rand::normal<Vector>(out_dim, 1, generator_)),
       activation_function_(std::move(activation_function)),
       weights_gradient_(Matrix::Zero(out_dim, in_dim)),
-      bias_gradient_(Vector::Zero(out_dim)) {}
+      bias_gradient_(Vector::Zero(out_dim)),
+      optimizer_(std::monostate()) {}
 
 Layer::Layer(std::istream& is, const ActivationFunction& activation_function) {
   Index weights_rows, weights_cols;
@@ -61,10 +62,9 @@ Layer::Layer(std::istream& is, const ActivationFunction& activation_function) {
   is >> optimizer_type;
   ;
   if (optimizer_type == "AdamW") {
-    optimizer_ = Optimizer::AdamW;
-    adam_w_opt_ = AdamWOptimizer(is);
+    optimizer_ = AdamWOptimizer(is);
   } else {
-    optimizer_ = Optimizer::MiniBatchGD;
+    optimizer_ = std::monostate();
   }
 }
 
@@ -92,20 +92,13 @@ RowVector Layer::PropagateBackSoftMaxCE(const Vector& prev_backprop_vector) {
 
 void Layer::UpdateParameters(int batch_size, double learning_rate,
                              double weights_decay) {
-  switch (optimizer_) {
-    case Optimizer::MiniBatchGD:
-      UpdateParametersMiniBatchGD(batch_size, learning_rate, weights_decay);
-      break;
-    case Optimizer::AdamW:
-      UpdateParametersAdamW(batch_size, learning_rate, weights_decay);
-      break;
+  if (std::holds_alternative<AdamWOptimizer>(optimizer_)) {
+    UpdateParametersAdamW(batch_size, learning_rate, weights_decay);
+  } else {
+    UpdateParametersMiniBatchGD(batch_size, learning_rate, weights_decay);
   }
   weights_gradient_.setZero();
   bias_gradient_.setZero();
-}
-
-void Layer::SetOptimizer(Optimizer optimizer) {
-  optimizer_ = optimizer;
 }
 
 std::ostream& operator<<(std::ostream& os, const Layer& layer) {
@@ -116,9 +109,10 @@ std::ostream& operator<<(std::ostream& os, const Layer& layer) {
   os << layer.activation_function_.GetType() << std::endl;
   os << layer.GetOptimizerType() << std::endl;
 
-  if (layer.optimizer_ == Optimizer::AdamW) {
-    os << layer.adam_w_opt_;
+  if (std::holds_alternative<AdamWOptimizer>(layer.optimizer_)) {
+    os << std::get<AdamWOptimizer>(layer.optimizer_);
   }
+
   return os;
 }
 
@@ -195,12 +189,14 @@ void Layer::UpdateBiasAdamW(int batch_size, double learning_rate,
 void Layer::UpdateParametersAdamW(int batch_size, double learning_rate,
                                   double weights_decay) {
   ApplyWeightsDecay(batch_size, learning_rate, weights_decay);
-  adam_w_opt_.UpdateMoments(weights_gradient_, bias_gradient_);
-  AdamWMoments corrected_moments = adam_w_opt_.ComputeCorrectedMoments();
+  // TODO: CHECK
+  auto& adam_w_opt = std::get<AdamWOptimizer>(optimizer_);
+  adam_w_opt.UpdateMoments(weights_gradient_, bias_gradient_);
+  AdamWMoments corrected_moments = adam_w_opt.ComputeCorrectedMoments();
   UpdateWeightsAdamW(batch_size, learning_rate, corrected_moments.m_w,
-                     corrected_moments.v_w, adam_w_opt_.GetEpsilon());
+                     corrected_moments.v_w, adam_w_opt.GetEpsilon());
   UpdateBiasAdamW(batch_size, learning_rate, corrected_moments.m_b,
-                  corrected_moments.v_b, adam_w_opt_.GetEpsilon());
+                  corrected_moments.v_b, adam_w_opt.GetEpsilon());
 }
 
 void Layer::UpdateParametersMiniBatchGD(int batch_size, double learning_rate,
@@ -211,9 +207,10 @@ void Layer::UpdateParametersMiniBatchGD(int batch_size, double learning_rate,
 }
 
 std::string Layer::GetOptimizerType() const {
-  switch (optimizer_) {
-    case Optimizer::MiniBatchGD: return "MiniBatchGD";
-    case Optimizer::AdamW: return "AdamW";
+  if (std::holds_alternative<AdamWOptimizer>(optimizer_)) {
+    return "AdamW";
+  } else {
+    return "MiniBatchGD";
   }
 }
 

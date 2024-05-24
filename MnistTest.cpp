@@ -1,6 +1,7 @@
 #include "MnistTest.h"
 
 #include "ActivationFunction.h"
+#include "AdamWOptimizer.h"
 #include "LossFunction.h"
 #include "Network.h"
 
@@ -27,8 +28,7 @@ void RunMnistTest(Data::MnistType mnist_type,
                              {NeuralNetwork::ActivationFunction::LeakyReLu(),
                               NeuralNetwork::ActivationFunction::LeakyReLu(),
                               NeuralNetwork::ActivationFunction::SoftMax()});
-  network.SetOptimizer(NeuralNetwork::Optimizer::AdamW);
-
+  network.SetOptimizer(NeuralNetwork::AdamWOptimizer());
   network.Train(train_inputs, train_targets, test_inputs, test_targets,
                 batch_size, learning_rate, weights_decay, epochs,
                 NeuralNetwork::LossFunction::CrossEntropyLoss(),
@@ -42,6 +42,7 @@ void RunClassicMnistTest() {
 }
 
 void RunFashionMnistTest() {
+  RunMnistTest(Data::MnistType::Fashion, Data::DataProcessing::None);
   RunMnistTest(Data::MnistType::Fashion, Data::DataProcessing::Normalize);
   RunMnistTest(Data::MnistType::Fashion, Data::DataProcessing::Binarize);
 }

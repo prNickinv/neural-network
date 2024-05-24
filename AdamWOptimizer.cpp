@@ -1,14 +1,17 @@
 #include "AdamWOptimizer.h"
 
 #include <cmath>
-#include <iomanip>
-#include <limits>
 
 namespace NeuralNetwork {
 
 AdamWOptimizer::AdamWOptimizer(Index in_dim, Index out_dim)
     : adam_{Matrix::Zero(out_dim, in_dim), Matrix::Zero(out_dim, in_dim),
             Vector::Zero(out_dim), Vector::Zero(out_dim)} {}
+
+AdamWOptimizer::AdamWOptimizer(double beta1, double beta2, double epsilon)
+    : beta1_{beta1},
+      beta2_{beta2},
+      epsilon_{epsilon} {}
 
 AdamWOptimizer::AdamWOptimizer(std::istream& is) {
   is >> beta1_;
@@ -48,6 +51,11 @@ AdamWOptimizer::AdamWOptimizer(std::istream& is) {
   }
 }
 
+void AdamWOptimizer::Resize(Index rows, Index cols) {
+  adam_ = {Matrix::Zero(rows, cols), Matrix::Zero(rows, cols),
+           Vector::Zero(rows), Vector::Zero(rows)};
+}
+
 void AdamWOptimizer::UpdateMoments(const Matrix& weights_gradient,
                                    const Vector& bias_gradient) {
   ++time_;
@@ -64,9 +72,7 @@ AdamWMoments AdamWOptimizer::ComputeCorrectedMoments() const {
   double beta1_t = 1 - std::pow(beta1_, time_);
   double beta2_t = 1 - std::pow(beta2_, time_);
 
-  return {adam_.m_w / beta1_t,
-          adam_.v_w / beta2_t,
-          adam_.m_b / beta1_t,
+  return {adam_.m_w / beta1_t, adam_.v_w / beta2_t, adam_.m_b / beta1_t,
           adam_.v_b / beta2_t};
 }
 
@@ -75,7 +81,7 @@ double AdamWOptimizer::GetEpsilon() const {
 }
 
 std::ostream& operator<<(std::ostream& os, const AdamWOptimizer& adam) {
-  os << std::fixed << std::setprecision(std::numeric_limits<double>::digits10);
+  //os << std::fixed << std::setprecision(std::numeric_limits<double>::digits10);
 
   os << adam.beta1_ << std::endl;
   os << adam.beta2_ << std::endl;
@@ -130,7 +136,6 @@ std::istream& operator>>(std::istream& is, AdamWOptimizer& adam) {
     is >> adam.adam_.m_b(i);
     std::cout << adam.adam_.m_b(i);
   }
-
 
   is >> size;
   adam.adam_.v_b = Vector::Zero(size);
