@@ -116,7 +116,7 @@ void Network::Train(const Vectors& training_inputs,
   }
 }
 
-Network::Vector Network::Predict(const Vector& input_vector) {
+Vector Network::Predict(const Vector& input_vector) {
   assert(input_vector.size() > 0 && "Input vector cannot be empty");
   Vector output_vector = input_vector;
   for (auto& layer : layers_) {
@@ -191,9 +191,10 @@ void Network::TrainEpoch(const Vectors& training_inputs,
   }
 }
 
-Network::RowVector Network::ProcessOutputLayer(
-    const Vector& predicted_vector, const Vector& target_vector,
-    const LossFunction& loss_function, Task task) {
+RowVector Network::ProcessOutputLayer(const Vector& predicted_vector,
+                                      const Vector& target_vector,
+                                      const LossFunction& loss_function,
+                                      Task task) {
   if (task == Task::SoftMaxCEClassification) {
     Vector init_backprop_vector =
         predicted_vector - target_vector; // d[softmax]/d[Ax+b] * u^T

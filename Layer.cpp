@@ -14,8 +14,7 @@ Layer::Layer(Index in_dim, Index out_dim,
       activation_function_(activation_function),
       weights_gradient_(Matrix::Zero(out_dim, in_dim)),
       bias_gradient_(Vector::Zero(out_dim)),
-      adam_w_opt_(in_dim, out_dim) {
-}
+      adam_w_opt_(in_dim, out_dim) {}
 
 Layer::Layer(Index in_dim, Index out_dim,
              ActivationFunction&& activation_function)
@@ -59,7 +58,8 @@ Layer::Layer(std::istream& is, const ActivationFunction& activation_function) {
   }
 
   std::string optimizer_type;
-  is >> optimizer_type;;
+  is >> optimizer_type;
+  ;
   if (optimizer_type == "AdamW") {
     optimizer_ = Optimizer::AdamW;
     adam_w_opt_ = AdamWOptimizer(is);
@@ -68,14 +68,14 @@ Layer::Layer(std::istream& is, const ActivationFunction& activation_function) {
   }
 }
 
-Layer::Vector Layer::PushForward(const Vector& input_vector) {
+Vector Layer::PushForward(const Vector& input_vector) {
   assert(input_vector.size() != 0 && "Input vector cannot be empty");
   input_vector_ = input_vector;
   pre_activated_vector_ = ApplyParameters(input_vector);
   return ApplyActivation();
 }
 
-Layer::RowVector Layer::PropagateBack(const RowVector& prev_backprop_vector) {
+RowVector Layer::PropagateBack(const RowVector& prev_backprop_vector) {
   assert(prev_backprop_vector.size() != 0
          && "Vector from previous gradient descent step cannot be empty");
   Matrix activation_jacobian =
@@ -84,13 +84,11 @@ Layer::RowVector Layer::PropagateBack(const RowVector& prev_backprop_vector) {
   return ComputeNextBackpropVector(prev_backprop_vector, activation_jacobian);
 }
 
-Layer::RowVector Layer::PropagateBackSoftMaxCE(
-    const Vector& prev_backprop_vector) {
+RowVector Layer::PropagateBackSoftMaxCE(const Vector& prev_backprop_vector) {
   bias_gradient_ += prev_backprop_vector;
   weights_gradient_ += prev_backprop_vector * input_vector_.transpose();
   return prev_backprop_vector.transpose() * weights_;
 }
-
 
 void Layer::UpdateParameters(int batch_size, double learning_rate,
                              double weights_decay) {
@@ -124,25 +122,24 @@ std::ostream& operator<<(std::ostream& os, const Layer& layer) {
   return os;
 }
 
-
 // TODO: This is not adjusted to work with AdamWOptimizer
 std::istream& operator>>(std::istream& is, Layer& layer) {
-  Layer::Index weights_rows, weights_cols;
+  Index weights_rows, weights_cols;
   // TODO: Initialize input_vector_ and pre_activated_vector_ with zeros?
   is >> weights_rows >> weights_cols;
   layer.weights_.resize(weights_rows, weights_cols);
-  layer.weights_gradient_ = Layer::Matrix::Zero(weights_rows, weights_cols);
-  for (Layer::Index i = 0; i != weights_rows; ++i) {
-    for (Layer::Index j = 0; j != weights_cols; ++j) {
+  layer.weights_gradient_ = Matrix::Zero(weights_rows, weights_cols);
+  for (Index i = 0; i != weights_rows; ++i) {
+    for (Index j = 0; j != weights_cols; ++j) {
       is >> layer.weights_(i, j);
     }
   }
 
-  Layer::Index bias_size;
+  Index bias_size;
   is >> bias_size;
   layer.bias_.resize(bias_size);
-  layer.bias_gradient_ = Layer::Vector::Zero(bias_size);
-  for (Layer::Index i = 0; i != bias_size; ++i) {
+  layer.bias_gradient_ = Vector::Zero(bias_size);
+  for (Index i = 0; i != bias_size; ++i) {
     is >> layer.bias_(i);
   }
 
@@ -152,17 +149,17 @@ std::istream& operator>>(std::istream& is, Layer& layer) {
   return is;
 }
 
-Layer::Vector Layer::ApplyParameters(const Vector& input_vector) const {
+Vector Layer::ApplyParameters(const Vector& input_vector) const {
   assert(input_vector.size() != 0);
   return weights_ * input_vector + bias_;
 }
 
-Layer::Vector Layer::ApplyActivation() const {
+Vector Layer::ApplyActivation() const {
   assert(pre_activated_vector_.size() != 0);
   return activation_function_.Activate(pre_activated_vector_);
 }
 
-Layer::RowVector Layer::ComputeNextBackpropVector(
+RowVector Layer::ComputeNextBackpropVector(
     const RowVector& prev_backprop_vector,
     const Matrix& activation_jacobian) const {
   return prev_backprop_vector * activation_jacobian * weights_;
@@ -203,7 +200,7 @@ void Layer::UpdateParametersAdamW(int batch_size, double learning_rate,
   UpdateWeightsAdamW(batch_size, learning_rate, corrected_moments.m_w,
                      corrected_moments.v_w, adam_w_opt_.GetEpsilon());
   UpdateBiasAdamW(batch_size, learning_rate, corrected_moments.m_b,
-                    corrected_moments.v_b, adam_w_opt_.GetEpsilon());
+                  corrected_moments.v_b, adam_w_opt_.GetEpsilon());
 }
 
 void Layer::UpdateParametersMiniBatchGD(int batch_size, double learning_rate,
@@ -215,10 +212,8 @@ void Layer::UpdateParametersMiniBatchGD(int batch_size, double learning_rate,
 
 std::string Layer::GetOptimizerType() const {
   switch (optimizer_) {
-    case Optimizer::MiniBatchGD:
-      return "MiniBatchGD";
-    case Optimizer::AdamW:
-      return "AdamW";
+    case Optimizer::MiniBatchGD: return "MiniBatchGD";
+    case Optimizer::AdamW: return "AdamW";
   }
 }
 

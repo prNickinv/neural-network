@@ -6,6 +6,8 @@
 
 #include <Eigen/Dense>
 
+#include "GlobalUsings.h"
+
 namespace NeuralNetwork {
 
 enum class ActivationFunctionType {
@@ -20,9 +22,6 @@ enum class ActivationFunctionType {
 };
 
 class ActivationFunction {
-  using Vector = Eigen::VectorXd;
-  using Matrix = Eigen::MatrixXd;
-  using Index = Eigen::Index;
   using VecToVecFunc = std::function<Vector(const Vector&)>;
   using VecToMatFunc = std::function<Matrix(const Vector&)>;
   using DoubleToDoubleFunc = std::function<double(double)>;

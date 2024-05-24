@@ -3,11 +3,11 @@
 
 #include <initializer_list>
 #include <iostream>
-#include <vector>
 
 #include <Eigen/Dense>
 
 #include "ActivationFunction.h"
+#include "GlobalUsings.h"
 #include "Layer.h"
 #include "LossFunction.h"
 
@@ -30,14 +30,9 @@ struct ClassificationMetrics {
 };
 
 class Network {
-  using Vector = Eigen::VectorXd;
-  using RowVector = Eigen::RowVectorXd;
-  using Index = Eigen::Index;
   using Layers = std::vector<Layer>;
 
  public:
-  using Vectors = std::vector<Vector>;
-
   Network() = default;
   Network(std::initializer_list<Index>,
           std::initializer_list<ActivationFunction>);

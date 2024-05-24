@@ -27,14 +27,13 @@ ActivationFunction::ActivationFunction(VecToVecFunc&& activation_function,
   assert(derivative_of_activation_ && "Activation derivative cannot be empty");
 }
 
-ActivationFunction::Vector ActivationFunction::Activate(
-    const Vector& input_vector) const {
+Vector ActivationFunction::Activate(const Vector& input_vector) const {
   assert(activation_function_ && "Activation function cannot be empty");
   assert(input_vector.size() != 0 && "Input vector cannot be empty");
   return activation_function_(input_vector);
 }
 
-ActivationFunction::Matrix ActivationFunction::ComputeJacobianMatrix(
+Matrix ActivationFunction::ComputeJacobianMatrix(
     const Vector& input_vector) const {
   assert(derivative_of_activation_ && "Activation derivative cannot be empty");
   assert(input_vector.size() != 0 && "Input vector cannot be empty");

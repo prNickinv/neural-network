@@ -9,19 +9,13 @@
 
 #include "ActivationFunction.h"
 #include "AdamWOptimizer.h"
+#include "GlobalUsings.h"
 
 namespace NeuralNetwork {
 
-enum class Optimizer {
-    MiniBatchGD,
-    AdamW
-};
+enum class Optimizer { MiniBatchGD, AdamW };
 
 class Layer {
-  using Vector = Eigen::VectorXd;
-  using RowVector = Eigen::RowVectorXd;
-  using Matrix = Eigen::MatrixXd;
-  using Index = Eigen::Index;
   using RandomGenerator = Eigen::Rand::P8_mt19937_64;
 
  public:

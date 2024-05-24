@@ -5,11 +5,11 @@
 
 #include <Eigen/Dense>
 
+#include "GlobalUsings.h"
+
 namespace NeuralNetwork {
 
 class LossFunction {
-  using Vector = Eigen::VectorXd;
-  using RowVector = Eigen::RowVectorXd;
   using VecVecToDoubleFunc =
       std::function<double(const Vector&, const Vector&)>;
   using VecVecToRowVecFunc =

@@ -24,17 +24,16 @@ LossFunction::LossFunction(
   assert(derivative_of_loss_ && "Loss derivative cannot be empty!");
 }
 
-double LossFunction::ComputeLoss(const LossFunction::Vector& output,
-                                 const LossFunction::Vector& target) const {
+double LossFunction::ComputeLoss(const Vector& output,
+                                 const Vector& target) const {
   assert(loss_function_ && "Loss function cannot be empty!");
   assert(output.size() != 0 && "Output vector cannot be empty!");
   assert(target.size() != 0 && "Target vector cannot be empty!");
   return loss_function_(output, target);
 }
 
-LossFunction::RowVector LossFunction::ComputeInitialGradient(
-    const LossFunction::Vector& output,
-    const LossFunction::Vector& target) const {
+RowVector LossFunction::ComputeInitialGradient(const Vector& output,
+                                               const Vector& target) const {
   assert(derivative_of_loss_ && "Loss derivative cannot be empty!");
   assert(output.size() != 0 && "Output vector cannot be empty!");
   assert(target.size() != 0 && "Target vector cannot be empty!");

@@ -1,18 +1,14 @@
 #ifndef DATA_H
 #define DATA_H
 
-#include <vector>
-
 #include <Eigen/Dense>
-
 #include "mnist/mnist_reader.hpp"
+
+#include "GlobalUsings.h"
 
 // Preparing mnist data based on preprocessed data from https://github.com/ArthurSonzogni/mnist-fashion
 namespace NeuralNetwork::Data {
 
-using Vector = Eigen::VectorXd;
-using Index = Eigen::Index;
-using Vectors = std::vector<Vector>;
 using Mnist = mnist::MNIST_dataset<std::vector, std::vector<uint8_t>, uint8_t>;
 
 struct Dataset {
