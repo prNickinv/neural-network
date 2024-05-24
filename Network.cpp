@@ -51,6 +51,12 @@ Network::Network(
   }
 }
 
+void Network::SetOptimizer(Optimizer optimizer) {
+  for (auto& layer : layers_) {
+    layer.SetOptimizer(optimizer);
+  }
+}
+
 void Network::Train(const Vectors& training_inputs,
                     const Vectors& training_targets,
                     const Vectors& validation_inputs,

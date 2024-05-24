@@ -2,13 +2,20 @@
 #define LAYER_H
 
 #include <iostream>
+#include <string>
 
 #include <Eigen/Dense>
 #include <EigenRand/EigenRand>
 
 #include "ActivationFunction.h"
+#include "AdamWOptimizer.h"
 
 namespace NeuralNetwork {
+
+enum class Optimizer {
+    MiniBatchGD,
+    AdamW
+};
 
 class Layer {
   using Vector = Eigen::VectorXd;
@@ -29,6 +36,7 @@ class Layer {
   RowVector PropagateBackSoftMaxCE(const Vector&);
   void UpdateParameters(int, double, double);
 
+  void SetOptimizer(Optimizer);
   friend std::ostream& operator<<(std::ostream&, const Layer&);
   friend std::istream& operator>>(std::istream&, Layer&);
 
@@ -41,6 +49,15 @@ class Layer {
                                                     const Matrix&) const;
   void UpdateGradients(const Matrix&, const RowVector&);
 
+  void ApplyWeightsDecay(int, double, double);
+  void UpdateWeightsAdamW(int, double, const Matrix&, const Matrix&, double);
+  void UpdateBiasAdamW(int, double, const Vector&, const Vector&, double);
+
+  void UpdateParametersAdamW(int, double, double);
+  void UpdateParametersMiniBatchGD(int, double, double);
+
+  std::string GetOptimizerType() const;
+
   static constexpr int random_seed_{42};
   static RandomGenerator generator_;
 
@@ -52,6 +69,9 @@ class Layer {
 
   Matrix weights_gradient_;
   Vector bias_gradient_;
+
+  Optimizer optimizer_{Optimizer::AdamW};
+  AdamWOptimizer adam_w_opt_;
 };
 
 } // namespace NeuralNetwork

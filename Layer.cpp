@@ -13,7 +13,9 @@ Layer::Layer(Index in_dim, Index out_dim,
       bias_(Eigen::Rand::normal<Vector>(out_dim, 1, generator_)),
       activation_function_(activation_function),
       weights_gradient_(Matrix::Zero(out_dim, in_dim)),
-      bias_gradient_(Vector::Zero(out_dim)) {}
+      bias_gradient_(Vector::Zero(out_dim)),
+      adam_w_opt_(in_dim, out_dim) {
+}
 
 Layer::Layer(Index in_dim, Index out_dim,
              ActivationFunction&& activation_function)
@@ -55,6 +57,15 @@ Layer::Layer(std::istream& is, const ActivationFunction& activation_function) {
   } else {
     activation_function_ = ActivationFunction::GetFunction(activation_type);
   }
+
+  std::string optimizer_type;
+  is >> optimizer_type;;
+  if (optimizer_type == "AdamW") {
+    optimizer_ = Optimizer::AdamW;
+    adam_w_opt_ = AdamWOptimizer(is);
+  } else {
+    optimizer_ = Optimizer::MiniBatchGD;
+  }
 }
 
 Layer::Vector Layer::PushForward(const Vector& input_vector) {
@@ -80,13 +91,23 @@ Layer::RowVector Layer::PropagateBackSoftMaxCE(
   return prev_backprop_vector.transpose() * weights_;
 }
 
+
 void Layer::UpdateParameters(int batch_size, double learning_rate,
                              double weights_decay) {
-  weights_ -= (learning_rate / batch_size) * weights_gradient_
-      + (2 * weights_decay * learning_rate / batch_size) * weights_;
-  bias_ -= (learning_rate / batch_size) * bias_gradient_;
+  switch (optimizer_) {
+    case Optimizer::MiniBatchGD:
+      UpdateParametersMiniBatchGD(batch_size, learning_rate, weights_decay);
+      break;
+    case Optimizer::AdamW:
+      UpdateParametersAdamW(batch_size, learning_rate, weights_decay);
+      break;
+  }
   weights_gradient_.setZero();
   bias_gradient_.setZero();
+}
+
+void Layer::SetOptimizer(Optimizer optimizer) {
+  optimizer_ = optimizer;
 }
 
 std::ostream& operator<<(std::ostream& os, const Layer& layer) {
@@ -95,9 +116,16 @@ std::ostream& operator<<(std::ostream& os, const Layer& layer) {
   os << layer.bias_.size() << std::endl;
   os << layer.bias_ << std::endl;
   os << layer.activation_function_.GetType() << std::endl;
+  os << layer.GetOptimizerType() << std::endl;
+
+  if (layer.optimizer_ == Optimizer::AdamW) {
+    os << layer.adam_w_opt_;
+  }
   return os;
 }
 
+
+// TODO: This is not adjusted to work with AdamWOptimizer
 std::istream& operator>>(std::istream& is, Layer& layer) {
   Layer::Index weights_rows, weights_cols;
   // TODO: Initialize input_vector_ and pre_activated_vector_ with zeros?
@@ -146,6 +174,52 @@ void Layer::UpdateGradients(const Matrix& activation_jacobian,
       activation_jacobian * prev_backprop_vector.transpose();
   bias_gradient_ += transit_vector;
   weights_gradient_ += transit_vector * input_vector_.transpose();
+}
+
+void Layer::ApplyWeightsDecay(int batch_size, double learning_rate,
+                              double weights_decay) {
+  weights_ -= (weights_decay * learning_rate / batch_size) * weights_;
+}
+
+void Layer::UpdateWeightsAdamW(int batch_size, double learning_rate,
+                               const Matrix& m_hat_w, const Matrix& v_hat_w,
+                               double eps) {
+  weights_ -= (learning_rate / batch_size)
+      * m_hat_w.cwiseQuotient((v_hat_w.cwiseSqrt().array() + eps).matrix());
+}
+
+void Layer::UpdateBiasAdamW(int batch_size, double learning_rate,
+                            const Vector& m_hat_b, const Vector& v_hat_b,
+                            double eps) {
+  bias_ -= (learning_rate / batch_size)
+      * m_hat_b.cwiseQuotient((v_hat_b.cwiseSqrt().array() + eps).matrix());
+}
+
+void Layer::UpdateParametersAdamW(int batch_size, double learning_rate,
+                                  double weights_decay) {
+  ApplyWeightsDecay(batch_size, learning_rate, weights_decay);
+  adam_w_opt_.UpdateMoments(weights_gradient_, bias_gradient_);
+  AdamWMoments corrected_moments = adam_w_opt_.ComputeCorrectedMoments();
+  UpdateWeightsAdamW(batch_size, learning_rate, corrected_moments.m_w,
+                     corrected_moments.v_w, adam_w_opt_.GetEpsilon());
+  UpdateBiasAdamW(batch_size, learning_rate, corrected_moments.m_b,
+                    corrected_moments.v_b, adam_w_opt_.GetEpsilon());
+}
+
+void Layer::UpdateParametersMiniBatchGD(int batch_size, double learning_rate,
+                                        double weights_decay) {
+  ApplyWeightsDecay(batch_size, learning_rate, weights_decay);
+  weights_ -= (learning_rate / batch_size) * weights_gradient_;
+  bias_ -= (learning_rate / batch_size) * bias_gradient_;
+}
+
+std::string Layer::GetOptimizerType() const {
+  switch (optimizer_) {
+    case Optimizer::MiniBatchGD:
+      return "MiniBatchGD";
+    case Optimizer::AdamW:
+      return "AdamW";
+  }
 }
 
 Layer::RandomGenerator Layer::generator_{random_seed_};

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.27)
+cmake_minimum_required(VERSION 3.22)
 project(neural-network)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -15,6 +15,7 @@ add_definitions(-DMNIST_DATA_DIR="${MNIST_DATA_DIR}" -DMNIST_FASHION_DATA_DIR="$
 set(NEURAL_NETWORK ${CMAKE_SOURCE_DIR}/ActivationFunction.cpp
         ${CMAKE_SOURCE_DIR}/LossFunction.cpp
         ${CMAKE_SOURCE_DIR}/Layer.cpp
+        ${CMAKE_SOURCE_DIR}/AdamWOptimizer.cpp
         ${CMAKE_SOURCE_DIR}/Network.cpp
         ${CMAKE_SOURCE_DIR}/View.cpp
         ${CMAKE_SOURCE_DIR}/Data.cpp

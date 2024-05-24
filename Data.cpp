@@ -33,7 +33,7 @@ Vectors GenerateInputVectors(
   for (int i = 0; i != inputs.size(); ++i) {
     input_vectors[i] = Vector::Zero(inputs[i].size());
     for (int j = 0; j != inputs[i].size(); ++j) {
-      input_vectors[i](j) = inputs[i][j];
+      input_vectors[i](j) = inputs[i][j] / 255.0;
     }
   }
   return input_vectors;

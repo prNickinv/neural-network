@@ -45,6 +45,7 @@ class Network {
   // In case of custom activation functions
   Network(std::istream&, std::initializer_list<ActivationFunction>);
 
+  void SetOptimizer(Optimizer);
   void Train(const Vectors&, const Vectors&, const Vectors&, const Vectors&,
              int, double, double, int, const LossFunction&,
              Task = Task::Unspecified, EarlyStopping = EarlyStopping::Disable,
