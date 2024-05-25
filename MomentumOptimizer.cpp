@@ -2,8 +2,8 @@
 
 namespace NeuralNetwork {
 
-MomentumOptimizer::MomentumOptimizer(double gamma)
-    : gamma_{gamma} {} //TODO: Should initialize 1x1 v_w_ and v_b_ with zeros here?
+//TODO: Should initialize 1x1 v_w_ and v_b_ with zeros here?
+MomentumOptimizer::MomentumOptimizer(double gamma) : gamma_{gamma} {}
 
 MomentumOptimizer::MomentumOptimizer(std::istream& is) {
   is >> gamma_;
@@ -27,13 +27,14 @@ MomentumOptimizer::MomentumOptimizer(std::istream& is) {
   }
 }
 
-void MomentumOptimizer::Resize(Index rows, Index cols) {
+void MomentumOptimizer::Initialize(Index rows, Index cols) {
   v_w_ = Matrix::Zero(rows, cols);
   v_b_ = Vector::Zero(rows);
 }
 
 void MomentumOptimizer::UpdateVelocity(const Matrix& weights_gradient,
-                                       const Vector& bias_gradient, double learning_rate) {
+                                       const Vector& bias_gradient,
+                                       double learning_rate) {
   v_w_ = gamma_ * v_w_ + learning_rate * weights_gradient;
   v_b_ = gamma_ * v_b_ + learning_rate * bias_gradient;
 }

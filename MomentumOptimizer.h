@@ -15,7 +15,7 @@ class MomentumOptimizer {
   explicit MomentumOptimizer(double);
   explicit MomentumOptimizer(std::istream&);
 
-  void Resize(Index, Index);
+  void Initialize(Index, Index);
   void UpdateVelocity(const Matrix&, const Vector&, double);
 
   Matrix GetVelocityWeights() const;

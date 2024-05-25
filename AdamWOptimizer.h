@@ -12,8 +12,8 @@ namespace NeuralNetwork {
 struct AdamWMoments {
   Matrix m_w{Matrix::Zero(1, 1)}; // First moment for weights
   Matrix v_w{Matrix::Zero(1, 1)}; // Second moment for weights
-  Vector m_b{Vector::Zero(1)}; // First moment for bias
-  Vector v_b{Vector::Zero(1)}; // Second moment for bias
+  Vector m_b{Vector::Zero(1)};    // First moment for bias
+  Vector v_b{Vector::Zero(1)};    // Second moment for bias
 };
 
 class AdamWOptimizer {
@@ -23,7 +23,7 @@ class AdamWOptimizer {
   AdamWOptimizer(double, double, double);
   explicit AdamWOptimizer(std::istream&);
 
-  void Resize(Index, Index);
+  void Initialize(Index, Index);
   void UpdateMoments(const Matrix&, const Vector&);
   AdamWMoments ComputeCorrectedMoments() const;
   double GetEpsilon() const;

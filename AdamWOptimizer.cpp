@@ -52,7 +52,7 @@ AdamWOptimizer::AdamWOptimizer(std::istream& is) {
   }
 }
 
-void AdamWOptimizer::Resize(Index rows, Index cols) {
+void AdamWOptimizer::Initialize(Index rows, Index cols) {
   adam_ = {Matrix::Zero(rows, cols), Matrix::Zero(rows, cols),
            Vector::Zero(rows), Vector::Zero(rows)};
 }

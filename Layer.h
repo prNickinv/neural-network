@@ -16,7 +16,8 @@
 namespace NeuralNetwork {
 
 class Layer {
-  using Optimizer = std::variant<std::monostate, AdamWOptimizer, MomentumOptimizer>;
+  using Optimizer =
+      std::variant<std::monostate, AdamWOptimizer, MomentumOptimizer>;
   using RandomGenerator = Eigen::Rand::P8_mt19937_64;
 
  public:
@@ -35,7 +36,7 @@ class Layer {
   void SetOptimizer(const OptimizerType& optimizer) {
     optimizer_ = optimizer;
     std::get<OptimizerType>(optimizer_)
-        .Resize(weights_.rows(), weights_.cols());
+        .Initialize(weights_.rows(), weights_.cols());
   }
 
   friend std::ostream& operator<<(std::ostream&, const Layer&);
