@@ -18,7 +18,8 @@ void RunMnistTest(Data::MnistType mnist_type,
         test_targets] =
       NeuralNetwork::Data::GetMnistData(mnist_type, train_size, val_size,
                                         test_size, data_processing);
-
+//  std::ifstream file("/Users/nikitaartamonov/CLionProjects/network_test_momentum.txt");
+//  NeuralNetwork::Network network(file);
   int batch_size = 4;
   double learning_rate = 0.01;
   double weights_decay = 0.0;
@@ -33,18 +34,20 @@ void RunMnistTest(Data::MnistType mnist_type,
                 batch_size, learning_rate, weights_decay, epochs,
                 NeuralNetwork::LossFunction::CrossEntropyLoss(),
                 NeuralNetwork::Task::SoftMaxCEClassification);
+//  std::ofstream fileout("/Users/nikitaartamonov/CLionProjects/network_test_momentum.txt");
+//  fileout << network;
 }
 
 void RunClassicMnistTest() {
   RunMnistTest(Data::MnistType::Classic, Data::DataProcessing::None);
-  RunMnistTest(Data::MnistType::Classic, Data::DataProcessing::Normalize);
-  RunMnistTest(Data::MnistType::Classic, Data::DataProcessing::Binarize);
+  //RunMnistTest(Data::MnistType::Classic, Data::DataProcessing::Normalize);
+  //RunMnistTest(Data::MnistType::Classic, Data::DataProcessing::Binarize);
 }
 
 void RunFashionMnistTest() {
   RunMnistTest(Data::MnistType::Fashion, Data::DataProcessing::None);
-  RunMnistTest(Data::MnistType::Fashion, Data::DataProcessing::Normalize);
-  RunMnistTest(Data::MnistType::Fashion, Data::DataProcessing::Binarize);
+  //RunMnistTest(Data::MnistType::Fashion, Data::DataProcessing::Normalize);
+  //RunMnistTest(Data::MnistType::Fashion, Data::DataProcessing::Binarize);
 }
 
 } // namespace NeuralNetwork::MnistTest

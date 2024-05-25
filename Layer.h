@@ -11,11 +11,12 @@
 #include "ActivationFunction.h"
 #include "AdamWOptimizer.h"
 #include "GlobalUsings.h"
+#include "MomentumOptimizer.h"
 
 namespace NeuralNetwork {
 
 class Layer {
-  using Optimizer = std::variant<std::monostate, AdamWOptimizer>;
+  using Optimizer = std::variant<std::monostate, AdamWOptimizer, MomentumOptimizer>;
   using RandomGenerator = Eigen::Rand::P8_mt19937_64;
 
  public:
@@ -54,6 +55,7 @@ class Layer {
   void UpdateBiasAdamW(int, double, const Vector&, const Vector&, double);
 
   void UpdateParametersAdamW(int, double, double);
+  void UpdateParametersMomentum(int, double, double);
   void UpdateParametersMiniBatchGD(int, double, double);
 
   std::string GetOptimizerType() const;

@@ -4,6 +4,7 @@
 
 namespace NeuralNetwork {
 
+// TODO: Remove this constructor
 AdamWOptimizer::AdamWOptimizer(Index in_dim, Index out_dim)
     : adam_{Matrix::Zero(out_dim, in_dim), Matrix::Zero(out_dim, in_dim),
             Vector::Zero(out_dim), Vector::Zero(out_dim)} {}
@@ -81,8 +82,7 @@ double AdamWOptimizer::GetEpsilon() const {
 }
 
 std::ostream& operator<<(std::ostream& os, const AdamWOptimizer& adam) {
-  //os << std::fixed << std::setprecision(std::numeric_limits<double>::digits10);
-
+  //TODO: Place rows and cols in the same line
   os << adam.beta1_ << std::endl;
   os << adam.beta2_ << std::endl;
   os << adam.epsilon_ << std::endl;

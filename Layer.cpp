@@ -60,11 +60,12 @@ Layer::Layer(std::istream& is, const ActivationFunction& activation_function) {
 
   std::string optimizer_type;
   is >> optimizer_type;
-  ;
   if (optimizer_type == "AdamW") {
     optimizer_ = AdamWOptimizer(is);
+  } else if (optimizer_type == "Momentum") {
+    optimizer_ = MomentumOptimizer(is);
   } else {
-    optimizer_ = std::monostate();
+    optimizer_ = std::monostate(); // MiniBatchGD
   }
 }
 
@@ -94,6 +95,8 @@ void Layer::UpdateParameters(int batch_size, double learning_rate,
                              double weights_decay) {
   if (std::holds_alternative<AdamWOptimizer>(optimizer_)) {
     UpdateParametersAdamW(batch_size, learning_rate, weights_decay);
+  } else if (std::holds_alternative<MomentumOptimizer>(optimizer_)) {
+    UpdateParametersMomentum(batch_size, learning_rate, weights_decay);
   } else {
     UpdateParametersMiniBatchGD(batch_size, learning_rate, weights_decay);
   }
@@ -111,12 +114,15 @@ std::ostream& operator<<(std::ostream& os, const Layer& layer) {
 
   if (std::holds_alternative<AdamWOptimizer>(layer.optimizer_)) {
     os << std::get<AdamWOptimizer>(layer.optimizer_);
+  } else if (std::holds_alternative<MomentumOptimizer>(layer.optimizer_)) {
+    os << std::get<MomentumOptimizer>(layer.optimizer_);
   }
 
   return os;
 }
 
-// TODO: This is not adjusted to work with AdamWOptimizer
+// TODO: This is not adjusted to work with optimizers
+// TODO: Remove?
 std::istream& operator>>(std::istream& is, Layer& layer) {
   Index weights_rows, weights_cols;
   // TODO: Initialize input_vector_ and pre_activated_vector_ with zeros?
@@ -199,6 +205,16 @@ void Layer::UpdateParametersAdamW(int batch_size, double learning_rate,
                   corrected_moments.v_b, adam_w_opt.GetEpsilon());
 }
 
+void Layer::UpdateParametersMomentum(int batch_size, double learning_rate,
+                                     double weights_decay) {
+  //TODO: Order of update and velocity calculation
+  ApplyWeightsDecay(batch_size, learning_rate, weights_decay);
+  auto& momentum_opt = std::get<MomentumOptimizer>(optimizer_);
+  momentum_opt.UpdateVelocity(weights_gradient_, bias_gradient_, learning_rate);
+  weights_ -= (1.0 / batch_size) * momentum_opt.GetVelocityWeights();
+  bias_ -= (1.0 / batch_size) * momentum_opt.GetVelocityBias();
+}
+
 void Layer::UpdateParametersMiniBatchGD(int batch_size, double learning_rate,
                                         double weights_decay) {
   ApplyWeightsDecay(batch_size, learning_rate, weights_decay);
@@ -209,6 +225,8 @@ void Layer::UpdateParametersMiniBatchGD(int batch_size, double learning_rate,
 std::string Layer::GetOptimizerType() const {
   if (std::holds_alternative<AdamWOptimizer>(optimizer_)) {
     return "AdamW";
+  } else if (std::holds_alternative<MomentumOptimizer>(optimizer_)) {
+    return "Momentum";
   } else {
     return "MiniBatchGD";
   }
