@@ -13,6 +13,11 @@ using Matrix = Eigen::MatrixXd;
 using Index = Eigen::Index;
 using Vectors = std::vector<Vector>;
 
+struct Parameters {
+  Matrix weights;
+  Vector bias;
+};
+
 } // namespace NeuralNetwork
 
 #endif //GLOBALUSINGS_H

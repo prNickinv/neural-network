@@ -18,8 +18,8 @@ void RunMnistTest(Data::MnistType mnist_type,
         test_targets] =
       NeuralNetwork::Data::GetMnistData(mnist_type, train_size, val_size,
                                         test_size, data_processing);
-  //  std::ifstream file("/Users/nikitaartamonov/CLionProjects/network_test_momentum.txt");
-  //  NeuralNetwork::Network network(file);
+//    std::ifstream file("/Users/nikitaartamonov/CLionProjects/network_test_momentum.txt");
+//    NeuralNetwork::Network network(file);
   int batch_size = 4;
   double learning_rate = 0.01;
   double weights_decay = 0.0;
@@ -29,13 +29,13 @@ void RunMnistTest(Data::MnistType mnist_type,
                              {NeuralNetwork::ActivationFunction::LeakyReLu(),
                               NeuralNetwork::ActivationFunction::LeakyReLu(),
                               NeuralNetwork::ActivationFunction::SoftMax()});
-  network.SetOptimizer(NeuralNetwork::AdamWOptimizer());
+  network.SetOptimizer(NeuralNetwork::AdamWOptimizer(0.01, 0.0, 0.9, 0.999, 1e-7));
   network.Train(train_inputs, train_targets, test_inputs, test_targets,
                 batch_size, learning_rate, weights_decay, epochs,
                 NeuralNetwork::LossFunction::CrossEntropyLoss(),
                 NeuralNetwork::Task::SoftMaxCEClassification);
-  //  std::ofstream fileout("/Users/nikitaartamonov/CLionProjects/network_test_momentum.txt");
-  //  fileout << network;
+//    std::ofstream fileout("/Users/nikitaartamonov/CLionProjects/network_test_momentum.txt");
+//    fileout << network;
 }
 
 void RunClassicMnistTest() {
@@ -45,7 +45,7 @@ void RunClassicMnistTest() {
 }
 
 void RunFashionMnistTest() {
-  RunMnistTest(Data::MnistType::Fashion, Data::DataProcessing::None);
+  //RunMnistTest(Data::MnistType::Fashion, Data::DataProcessing::None);
   //RunMnistTest(Data::MnistType::Fashion, Data::DataProcessing::Normalize);
   //RunMnistTest(Data::MnistType::Fashion, Data::DataProcessing::Binarize);
 }
