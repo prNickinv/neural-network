@@ -19,7 +19,6 @@ struct AdamWMoments {
 class AdamWOptimizer {
  public:
   AdamWOptimizer() = default;
-  //AdamWOptimizer(Index, Index);
   AdamWOptimizer(double, double, double, double, double);
   explicit AdamWOptimizer(std::istream&);
 

@@ -54,14 +54,6 @@ class Layer {
                                                     const Matrix&) const;
   void UpdateGradients(const Matrix&, const RowVector&);
 
-  //void ApplyWeightsDecay(int, double, double);
-  //void UpdateWeightsAdamW(int, double, const Matrix&, const Matrix&, double);
-  //void UpdateBiasAdamW(int, double, const Vector&, const Vector&, double);
-
-  //void UpdateParametersAdamW(int, double, double);
-  //void UpdateParametersMomentum(int, double, double);
-  //void UpdateParametersMiniBatchGD(int, double, double);
-
   std::string GetOptimizerType() const;
 
   static constexpr int random_seed_{42};

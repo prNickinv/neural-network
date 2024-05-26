@@ -4,11 +4,6 @@
 
 namespace NeuralNetwork {
 
-// TODO: Remove this constructor
-//AdamWOptimizer::AdamWOptimizer(Index in_dim, Index out_dim)
-//    : adam_{Matrix::Zero(out_dim, in_dim), Matrix::Zero(out_dim, in_dim),
-//            Vector::Zero(out_dim), Vector::Zero(out_dim)} {}
-
 AdamWOptimizer::AdamWOptimizer(double learning_rate, double weights_decay,
                                double beta1, double beta2, double epsilon)
     : learning_rate_{learning_rate},
@@ -125,14 +120,6 @@ Parameters AdamWOptimizer::UpdateParameters(const Matrix& weights,
                                          corrected_moments.v_w, batch_size);
   parameters.bias = ComputeNewBias(parameters.bias, corrected_moments.m_b,
                                    corrected_moments.v_b, batch_size);
-
-//  parameters.weights -= (learning_rate_ / batch_size)
-//      * corrected_moments.m_w.cwiseQuotient(
-//          (corrected_moments.v_w.cwiseSqrt().array() + epsilon_).matrix());
-//  parameters.bias -= (learning_rate_ / batch_size)
-//      * corrected_moments.m_b.cwiseQuotient(
-//          (corrected_moments.v_b.cwiseSqrt().array() + epsilon_).matrix());
-
   return parameters;
 }
 
