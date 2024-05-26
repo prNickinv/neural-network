@@ -20,18 +20,23 @@ void RunMnistTest(Data::MnistType mnist_type,
                                         test_size, data_processing);
 //    std::ifstream file("/Users/nikitaartamonov/CLionProjects/network_test_momentum.txt");
 //    NeuralNetwork::Network network(file);
+
   int batch_size = 4;
   double learning_rate = 0.01;
   double weights_decay = 0.0;
-  int epochs = 5;
+  double beta1 = 0.9;
+  double beta2 = 0.999;
+  double epsilon = 1e-8;
+  int epochs = 10;
+
   auto network =
       NeuralNetwork::Network({784, 25, 100, 10},
                              {NeuralNetwork::ActivationFunction::LeakyReLu(),
                               NeuralNetwork::ActivationFunction::LeakyReLu(),
                               NeuralNetwork::ActivationFunction::SoftMax()});
-  network.SetOptimizer(NeuralNetwork::AdamWOptimizer(0.01, 0.0, 0.9, 0.999, 1e-8));
+  network.SetOptimizer(NeuralNetwork::AdamWOptimizer(learning_rate, weights_decay, beta1, beta2, epsilon));
   network.Train(train_inputs, train_targets, test_inputs, test_targets,
-                batch_size, learning_rate, weights_decay, epochs,
+                batch_size, epochs,
                 NeuralNetwork::LossFunction::CrossEntropyLoss(),
                 NeuralNetwork::Task::SoftMaxCEClassification);
 //    std::ofstream fileout("/Users/nikitaartamonov/CLionProjects/network_test_momentum.txt");

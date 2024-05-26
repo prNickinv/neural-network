@@ -91,8 +91,7 @@ RowVector Layer::PropagateBackSoftMaxCE(const Vector& prev_backprop_vector) {
   return prev_backprop_vector.transpose() * weights_;
 }
 
-void Layer::UpdateParameters(int batch_size, double learning_rate,
-                             double weights_decay) {
+void Layer::UpdateParameters(int batch_size) {
   Parameters new_parameters;
   if (std::holds_alternative<AdamWOptimizer>(optimizer_)) {
     new_parameters = std::get<AdamWOptimizer>(optimizer_)

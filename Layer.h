@@ -31,7 +31,7 @@ class Layer {
   [[nodiscard]] Vector PushForward(const Vector&);
   [[nodiscard]] RowVector PropagateBack(const RowVector&);
   RowVector PropagateBackSoftMaxCE(const Vector&);
-  void UpdateParameters(int, double, double);
+  void UpdateParameters(int);
 
   template<typename OptimizerType>
   void SetOptimizer(const OptimizerType& optimizer) {

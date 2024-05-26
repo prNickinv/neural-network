@@ -57,7 +57,7 @@ void Network::Train(const Vectors& training_inputs,
                     const Vectors& training_targets,
                     const Vectors& validation_inputs,
                     const Vectors& validation_targets, int batch_size,
-                    double learning_rate, double weights_decay, int epochs,
+                    int epochs,
                     const LossFunction& loss_function, Task task,
                     EarlyStopping early_stop, double threshold) {
   assert(!training_inputs.empty() && "No training samples provided");
@@ -78,8 +78,7 @@ void Network::Train(const Vectors& training_inputs,
       View::GenerateViewVector(training_inputs.size());
   for (int epoch = 0; epoch != epochs; ++epoch) {
     View::ShuffleViewVector(view_vector);
-    TrainEpoch(training_inputs, training_targets, batch_size, learning_rate,
-               weights_decay, loss_function, task, view_vector);
+    TrainEpoch(training_inputs, training_targets, batch_size, loss_function, task, view_vector);
 
     bool is_stop = Validate(validation_inputs, validation_targets,
                             loss_function, epoch, task, early_stop, threshold);
@@ -92,7 +91,7 @@ void Network::Train(const Vectors& training_inputs,
 
 void Network::Train(const Vectors& training_inputs,
                     const Vectors& training_targets, int batch_size,
-                    double learning_rate, double weights_decay, int epochs,
+                    int epochs,
                     const LossFunction& loss_function, Task task) {
   assert(!training_inputs.empty() && "No training samples provided");
   assert(!training_targets.empty() && "No training targets provided");
@@ -107,8 +106,7 @@ void Network::Train(const Vectors& training_inputs,
       View::GenerateViewVector(training_inputs.size());
   for (int epoch = 0; epoch != epochs; ++epoch) {
     View::ShuffleViewVector(view_vector);
-    TrainEpoch(training_inputs, training_targets, batch_size, learning_rate,
-               weights_decay, loss_function, task, view_vector);
+    TrainEpoch(training_inputs, training_targets, batch_size, loss_function, task, view_vector);
   }
 }
 
@@ -173,7 +171,6 @@ std::istream& operator>>(std::istream& is, Network& network) {
 
 void Network::TrainEpoch(const Vectors& training_inputs,
                          const Vectors& training_targets, int batch_size,
-                         double learning_rate, double weights_decay,
                          const LossFunction& loss_function, Task task,
                          const std::vector<int>& view_vector) {
   for (int i = 0; i != training_inputs.size(); i += batch_size) {
@@ -184,7 +181,7 @@ void Network::TrainEpoch(const Vectors& training_inputs,
                              loss_function, task);
       PropagateBack(output_backprop_vector);
     }
-    UpdateBatchParameters(batch_size, learning_rate, weights_decay);
+    UpdateBatchParameters(batch_size);
   }
 }
 
@@ -210,10 +207,9 @@ void Network::PropagateBack(const RowVector& prev_backprop_vector) {
   }
 }
 
-void Network::UpdateBatchParameters(int batch_size, double learning_rate,
-                                    double weights_decay) {
+void Network::UpdateBatchParameters(int batch_size) {
   for (auto& layer : layers_) {
-    layer.UpdateParameters(batch_size, learning_rate, weights_decay);
+    layer.UpdateParameters(batch_size);
   }
 }
 
