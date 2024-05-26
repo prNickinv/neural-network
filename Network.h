@@ -48,12 +48,11 @@ class Network {
   }
 
   void Train(const Vectors&, const Vectors&, const Vectors&, const Vectors&,
-             int, int, const LossFunction&,
-             Task = Task::Unspecified, EarlyStopping = EarlyStopping::Disable,
-             double = 0.0);
+             int, int, const LossFunction&, Task = Task::Unspecified,
+             EarlyStopping = EarlyStopping::Disable, double = 0.0);
   // Overload in case validation data is absent
-  void Train(const Vectors&, const Vectors&, int, int,
-             const LossFunction&, Task = Task::Unspecified);
+  void Train(const Vectors&, const Vectors&, int, int, const LossFunction&,
+             Task = Task::Unspecified);
 
   Vector Predict(const Vector&);
   double TestLoss(const Vectors&, const Vectors&, const LossFunction&);
@@ -64,8 +63,8 @@ class Network {
   friend std::istream& operator>>(std::istream&, Network&);
 
  private:
-  void TrainEpoch(const Vectors&, const Vectors&, int,
-                  const LossFunction&, Task, const std::vector<int>&);
+  void TrainEpoch(const Vectors&, const Vectors&, int, const LossFunction&,
+                  Task, const std::vector<int>&);
   RowVector ProcessOutputLayer(const Vector&, const Vector&,
                                const LossFunction&, Task);
   void PropagateBack(const RowVector&);

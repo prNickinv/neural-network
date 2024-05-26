@@ -57,8 +57,7 @@ void Network::Train(const Vectors& training_inputs,
                     const Vectors& training_targets,
                     const Vectors& validation_inputs,
                     const Vectors& validation_targets, int batch_size,
-                    int epochs,
-                    const LossFunction& loss_function, Task task,
+                    int epochs, const LossFunction& loss_function, Task task,
                     EarlyStopping early_stop, double threshold) {
   assert(!training_inputs.empty() && "No training samples provided");
   assert(!training_targets.empty() && "No training targets provided");
@@ -78,7 +77,8 @@ void Network::Train(const Vectors& training_inputs,
       View::GenerateViewVector(training_inputs.size());
   for (int epoch = 0; epoch != epochs; ++epoch) {
     View::ShuffleViewVector(view_vector);
-    TrainEpoch(training_inputs, training_targets, batch_size, loss_function, task, view_vector);
+    TrainEpoch(training_inputs, training_targets, batch_size, loss_function,
+               task, view_vector);
 
     bool is_stop = Validate(validation_inputs, validation_targets,
                             loss_function, epoch, task, early_stop, threshold);
@@ -90,8 +90,7 @@ void Network::Train(const Vectors& training_inputs,
 }
 
 void Network::Train(const Vectors& training_inputs,
-                    const Vectors& training_targets, int batch_size,
-                    int epochs,
+                    const Vectors& training_targets, int batch_size, int epochs,
                     const LossFunction& loss_function, Task task) {
   assert(!training_inputs.empty() && "No training samples provided");
   assert(!training_targets.empty() && "No training targets provided");
@@ -106,7 +105,8 @@ void Network::Train(const Vectors& training_inputs,
       View::GenerateViewVector(training_inputs.size());
   for (int epoch = 0; epoch != epochs; ++epoch) {
     View::ShuffleViewVector(view_vector);
-    TrainEpoch(training_inputs, training_targets, batch_size, loss_function, task, view_vector);
+    TrainEpoch(training_inputs, training_targets, batch_size, loss_function,
+               task, view_vector);
   }
 }
 

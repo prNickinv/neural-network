@@ -3,14 +3,16 @@
 namespace NeuralNetwork {
 
 MiniBatchGD::MiniBatchGD(double learning_rate, double weights_decay)
-    : learning_rate_{learning_rate}, weights_decay_{weights_decay} {}
+    : learning_rate_{learning_rate},
+      weights_decay_{weights_decay} {}
 
 MiniBatchGD::MiniBatchGD(std::istream& is) {
   is >> learning_rate_;
   is >> weights_decay_;
 }
 
-Matrix MiniBatchGD::ApplyWeightsDecay(const Matrix& weights, int batch_size) const {
+Matrix MiniBatchGD::ApplyWeightsDecay(const Matrix& weights,
+                                      int batch_size) const {
   return weights - (learning_rate_ * weights_decay_ / batch_size) * weights;
 }
 

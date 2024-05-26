@@ -58,7 +58,8 @@ void AdamWOptimizer::Initialize(Index rows, Index cols) {
            Vector::Zero(rows), Vector::Zero(rows)};
 }
 
-Matrix AdamWOptimizer::ApplyWeightsDecay(const Matrix& weights, int batch_size) const {
+Matrix AdamWOptimizer::ApplyWeightsDecay(const Matrix& weights,
+                                         int batch_size) const {
   return weights - (learning_rate_ * weights_decay_ / batch_size) * weights;
 }
 
@@ -90,22 +91,28 @@ Matrix AdamWOptimizer::ComputeNewWeights(const Matrix& weights,
                                          const Matrix& m_hat_w,
                                          const Matrix& v_hat_w,
                                          int batch_size) const {
-  return weights - (learning_rate_ / batch_size)
-      * m_hat_w.cwiseQuotient((v_hat_w.cwiseSqrt().array() + epsilon_).matrix());
+  return weights
+      - (learning_rate_ / batch_size)
+      * m_hat_w.cwiseQuotient(
+          (v_hat_w.cwiseSqrt().array() + epsilon_).matrix());
 }
 
 Vector AdamWOptimizer::ComputeNewBias(const Vector& bias, const Vector& m_hat_b,
-                                      const Vector& v_hat_b, int batch_size) const {
-  return bias - (learning_rate_ / batch_size)
-      * m_hat_b.cwiseQuotient((v_hat_b.cwiseSqrt().array() + epsilon_).matrix());
+                                      const Vector& v_hat_b,
+                                      int batch_size) const {
+  return bias
+      - (learning_rate_ / batch_size)
+      * m_hat_b.cwiseQuotient(
+          (v_hat_b.cwiseSqrt().array() + epsilon_).matrix());
 }
 
 Parameters AdamWOptimizer::UpdateParameters(const Matrix& weights,
-                                           const Vector& bias,
-                                           const Matrix& weights_gradient,
-                                           const Vector& bias_gradient,
-                                           int batch_size) {
-  assert(weights.rows() == adam_.m_w.rows() && weights.cols() == adam_.m_w.cols()
+                                            const Vector& bias,
+                                            const Matrix& weights_gradient,
+                                            const Vector& bias_gradient,
+                                            int batch_size) {
+  assert(weights.rows() == adam_.m_w.rows()
+         && weights.cols() == adam_.m_w.cols()
          && "Weights and m_w have different dimensions");
   assert(bias.size() == adam_.m_b.size()
          && "Bias and m_b have different dimensions");
@@ -116,8 +123,9 @@ Parameters AdamWOptimizer::UpdateParameters(const Matrix& weights,
   UpdateMoments(weights_gradient, bias_gradient);
   AdamWMoments corrected_moments = ComputeCorrectedMoments();
 
-  parameters.weights = ComputeNewWeights(parameters.weights, corrected_moments.m_w,
-                                         corrected_moments.v_w, batch_size);
+  parameters.weights =
+      ComputeNewWeights(parameters.weights, corrected_moments.m_w,
+                        corrected_moments.v_w, batch_size);
   parameters.bias = ComputeNewBias(parameters.bias, corrected_moments.m_b,
                                    corrected_moments.v_b, batch_size);
   return parameters;

@@ -29,7 +29,8 @@ class AdamWOptimizer {
   // TODO: Remove
   double GetEpsilon() const;
 
-  Matrix ComputeNewWeights(const Matrix&, const Matrix&, const Matrix&, int) const;
+  Matrix ComputeNewWeights(const Matrix&, const Matrix&, const Matrix&,
+                           int) const;
   Vector ComputeNewBias(const Vector&, const Vector&, const Vector&, int) const;
   Parameters UpdateParameters(const Matrix&, const Vector&, const Matrix&,
                               const Vector&, int);

@@ -14,8 +14,7 @@ enum class Nesterov { Enable, Disable };
 class MomentumOptimizer {
  public:
   MomentumOptimizer() = default;
-  MomentumOptimizer(double, double, double,
-                             Nesterov = Nesterov::Disable);
+  MomentumOptimizer(double, double, double, Nesterov = Nesterov::Disable);
   explicit MomentumOptimizer(std::istream&);
 
   void Initialize(Index, Index);

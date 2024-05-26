@@ -17,8 +17,8 @@
 namespace NeuralNetwork {
 
 class Layer {
-  using Optimizer =
-      std::variant<std::monostate, AdamWOptimizer, MomentumOptimizer, MiniBatchGD>;
+  using Optimizer = std::variant<std::monostate, AdamWOptimizer,
+                                 MomentumOptimizer, MiniBatchGD>;
   using RandomGenerator = Eigen::Rand::P8_mt19937_64;
 
  public:
