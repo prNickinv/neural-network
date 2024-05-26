@@ -1,5 +1,7 @@
 #include "MnistTest.h"
 
+#include <iostream>
+
 #include "ActivationFunction.h"
 #include "AdamWOptimizer.h"
 #include "LossFunction.h"
@@ -44,13 +46,21 @@ void RunMnistTest(Data::MnistType mnist_type,
 }
 
 void RunClassicMnistTest() {
+  std::cout << "Task: Handwritten digits recognition" << std::endl;
+  std::cout << "Dataset: MNIST" << std::endl;
+  std::cout << std::endl;
   RunMnistTest(Data::MnistType::Classic, Data::DataProcessing::None);
+  std::cout << "----------------------------------------" << std::endl;
   //RunMnistTest(Data::MnistType::Classic, Data::DataProcessing::Normalize);
   //RunMnistTest(Data::MnistType::Classic, Data::DataProcessing::Binarize);
 }
 
 void RunFashionMnistTest() {
+  std::cout << "Task: Fashion products recognition" << std::endl;
+  std::cout << "Dataset: Fashion MNIST" << std::endl;
+  std::cout << std::endl;
   RunMnistTest(Data::MnistType::Fashion, Data::DataProcessing::None);
+  std::cout << "----------------------------------------" << std::endl;
   //RunMnistTest(Data::MnistType::Fashion, Data::DataProcessing::Normalize);
   //RunMnistTest(Data::MnistType::Fashion, Data::DataProcessing::Binarize);
 }
