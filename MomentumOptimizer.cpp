@@ -100,20 +100,20 @@ Vector MomentumOptimizer::GetVelocityBias() const {
   return v_b_;
 }
 
-std::ostream& operator<<(std::ostream& os, const MomentumOptimizer& optimizer) {
-  os << optimizer.learning_rate_ << std::endl;
-  os << optimizer.weights_decay_ << std::endl;
-  os << optimizer.gamma_ << std::endl;
-  if (optimizer.nesterov_ == Nesterov::Enable) {
+std::ostream& operator<<(std::ostream& os, const MomentumOptimizer& momentum) {
+  os << momentum.learning_rate_ << std::endl;
+  os << momentum.weights_decay_ << std::endl;
+  os << momentum.gamma_ << std::endl;
+  if (momentum.nesterov_ == Nesterov::Enable) {
     os << "nesterov_enable" << std::endl;
   } else {
     os << "nesterov_disable" << std::endl;
   }
 
-  os << optimizer.v_w_.rows() << " " << optimizer.v_w_.cols() << std::endl;
-  os << optimizer.v_w_ << std::endl;
-  os << optimizer.v_b_.size() << std::endl;
-  os << optimizer.v_b_ << std::endl;
+  os << momentum.v_w_.rows() << " " << momentum.v_w_.cols() << std::endl;
+  os << momentum.v_w_ << std::endl;
+  os << momentum.v_b_.size() << std::endl;
+  os << momentum.v_b_ << std::endl;
 
   return os;
 }
