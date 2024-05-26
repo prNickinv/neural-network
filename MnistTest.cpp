@@ -29,7 +29,7 @@ void RunMnistTest(Data::MnistType mnist_type,
                              {NeuralNetwork::ActivationFunction::LeakyReLu(),
                               NeuralNetwork::ActivationFunction::LeakyReLu(),
                               NeuralNetwork::ActivationFunction::SoftMax()});
-  network.SetOptimizer(NeuralNetwork::AdamWOptimizer(0.01, 0.0, 0.9, 0.999, 1e-7));
+  network.SetOptimizer(NeuralNetwork::AdamWOptimizer(0.01, 0.0, 0.9, 0.999, 1e-8));
   network.Train(train_inputs, train_targets, test_inputs, test_targets,
                 batch_size, learning_rate, weights_decay, epochs,
                 NeuralNetwork::LossFunction::CrossEntropyLoss(),
@@ -45,7 +45,7 @@ void RunClassicMnistTest() {
 }
 
 void RunFashionMnistTest() {
-  //RunMnistTest(Data::MnistType::Fashion, Data::DataProcessing::None);
+  RunMnistTest(Data::MnistType::Fashion, Data::DataProcessing::None);
   //RunMnistTest(Data::MnistType::Fashion, Data::DataProcessing::Normalize);
   //RunMnistTest(Data::MnistType::Fashion, Data::DataProcessing::Binarize);
 }

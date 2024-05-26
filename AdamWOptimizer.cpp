@@ -110,15 +110,10 @@ Parameters AdamWOptimizer::UpdateParameters(const Matrix& weights,
                                            const Matrix& weights_gradient,
                                            const Vector& bias_gradient,
                                            int batch_size) {
-  assert(weights.rows() == v_w_.rows() && weights.cols() == v_w_.cols()
-         && "Weights and v_w_ have different dimensions");
-  assert(bias.size() == v_b_.size()
-         && "Bias and v_b_ have different dimensions");
-  assert(weights.rows() == weights_gradient.rows()
-         && weights.cols() == weights_gradient.cols()
-         && "Weights and weights_gradient have different dimensions");
-  assert(bias.size() == bias_gradient.size()
-         && "Bias and bias_gradient have different dimensions");
+  assert(weights.rows() == adam_.m_w.rows() && weights.cols() == adam_.m_w.cols()
+         && "Weights and m_w have different dimensions");
+  assert(bias.size() == adam_.m_b.size()
+         && "Bias and m_b have different dimensions");
 
   Parameters parameters{weights, bias};
   parameters.weights = ApplyWeightsDecay(weights, batch_size);

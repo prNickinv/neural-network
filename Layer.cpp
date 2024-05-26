@@ -14,7 +14,7 @@ Layer::Layer(Index in_dim, Index out_dim,
       activation_function_(activation_function),
       weights_gradient_(Matrix::Zero(out_dim, in_dim)),
       bias_gradient_(Vector::Zero(out_dim)),
-      optimizer_(std::monostate()) {}
+      optimizer_(MiniBatchGD()) {}
 
 Layer::Layer(Index in_dim, Index out_dim,
              ActivationFunction&& activation_function)
@@ -25,7 +25,7 @@ Layer::Layer(Index in_dim, Index out_dim,
       activation_function_(std::move(activation_function)),
       weights_gradient_(Matrix::Zero(out_dim, in_dim)),
       bias_gradient_(Vector::Zero(out_dim)),
-      optimizer_(std::monostate()) {}
+      optimizer_(MiniBatchGD()) {}
 
 Layer::Layer(std::istream& is, const ActivationFunction& activation_function) {
   Index weights_rows, weights_cols;
@@ -65,7 +65,7 @@ Layer::Layer(std::istream& is, const ActivationFunction& activation_function) {
   } else if (optimizer_type == "Momentum") {
     optimizer_ = MomentumOptimizer(is);
   } else {
-    optimizer_ = std::monostate(); // MiniBatchGD
+    optimizer_ = MiniBatchGD(is);
   }
 }
 
@@ -105,13 +105,23 @@ void Layer::UpdateParameters(int batch_size, double learning_rate,
                                            bias_gradient_, batch_size);
     //UpdateParametersMomentum(batch_size, learning_rate, weights_decay);
   } else {
-    UpdateParametersMiniBatchGD(batch_size, learning_rate, weights_decay);
+    new_parameters = std::get<MiniBatchGD>(optimizer_)
+                         .UpdateParameters(weights_, bias_, weights_gradient_,
+                                           bias_gradient_, batch_size);
+//    UpdateParametersMiniBatchGD(batch_size, learning_rate, weights_decay);
+//    weights_gradient_.setZero();
+//    bias_gradient_.setZero();
+//    return;
   }
 
   weights_ = new_parameters.weights;
   bias_ = new_parameters.bias;
   weights_gradient_.setZero();
   bias_gradient_.setZero();
+}
+
+void Layer::SetOptimizer(const MiniBatchGD& mbgd_optimizer) {
+  optimizer_ = mbgd_optimizer;
 }
 
 std::ostream& operator<<(std::ostream& os, const Layer& layer) {
@@ -126,6 +136,8 @@ std::ostream& operator<<(std::ostream& os, const Layer& layer) {
     os << std::get<AdamWOptimizer>(layer.optimizer_);
   } else if (std::holds_alternative<MomentumOptimizer>(layer.optimizer_)) {
     os << std::get<MomentumOptimizer>(layer.optimizer_);
+  } else {
+    os << std::get<MiniBatchGD>(layer.optimizer_);
   }
 
   return os;
@@ -183,68 +195,68 @@ void Layer::UpdateGradients(const Matrix& activation_jacobian,
   weights_gradient_ += transit_vector * input_vector_.transpose();
 }
 
-void Layer::ApplyWeightsDecay(int batch_size, double learning_rate,
-                              double weights_decay) {
-  weights_ -= (weights_decay * learning_rate / batch_size) * weights_;
-}
+//void Layer::ApplyWeightsDecay(int batch_size, double learning_rate,
+//                              double weights_decay) {
+//  weights_ -= (weights_decay * learning_rate / batch_size) * weights_;
+//}
+//
+//void Layer::UpdateWeightsAdamW(int batch_size, double learning_rate,
+//                               const Matrix& m_hat_w, const Matrix& v_hat_w,
+//                               double eps) {
+//  weights_ -= (learning_rate / batch_size)
+//      * m_hat_w.cwiseQuotient((v_hat_w.cwiseSqrt().array() + eps).matrix());
+//}
+//
+//void Layer::UpdateBiasAdamW(int batch_size, double learning_rate,
+//                            const Vector& m_hat_b, const Vector& v_hat_b,
+//                            double eps) {
+//  bias_ -= (learning_rate / batch_size)
+//      * m_hat_b.cwiseQuotient((v_hat_b.cwiseSqrt().array() + eps).matrix());
+//}
 
-void Layer::UpdateWeightsAdamW(int batch_size, double learning_rate,
-                               const Matrix& m_hat_w, const Matrix& v_hat_w,
-                               double eps) {
-  weights_ -= (learning_rate / batch_size)
-      * m_hat_w.cwiseQuotient((v_hat_w.cwiseSqrt().array() + eps).matrix());
-}
+//void Layer::UpdateParametersAdamW(int batch_size, double learning_rate,
+//                                  double weights_decay) {
+//
+//  Parameters params;
+//  params = std::get<AdamWOptimizer>(optimizer_)
+//               .UpdateParameters(weights_, bias_, weights_gradient_,
+//                                 bias_gradient_, batch_size);
+//  weights_ = params.weights;
+//  bias_ = params.bias;
+////  ApplyWeightsDecay(batch_size, learning_rate, weights_decay);
+////  // TODO: CHECK
+////  auto& adam_w_opt = std::get<AdamWOptimizer>(optimizer_);
+////  adam_w_opt.UpdateMoments(weights_gradient_, bias_gradient_);
+////  AdamWMoments corrected_moments = adam_w_opt.ComputeCorrectedMoments();
+////  UpdateWeightsAdamW(batch_size, learning_rate, corrected_moments.m_w,
+////                     corrected_moments.v_w, adam_w_opt.GetEpsilon());
+////  UpdateBiasAdamW(batch_size, learning_rate, corrected_moments.m_b,
+////                  corrected_moments.v_b, adam_w_opt.GetEpsilon());
+//}
 
-void Layer::UpdateBiasAdamW(int batch_size, double learning_rate,
-                            const Vector& m_hat_b, const Vector& v_hat_b,
-                            double eps) {
-  bias_ -= (learning_rate / batch_size)
-      * m_hat_b.cwiseQuotient((v_hat_b.cwiseSqrt().array() + eps).matrix());
-}
-
-void Layer::UpdateParametersAdamW(int batch_size, double learning_rate,
-                                  double weights_decay) {
-
-  Parameters params;
-  params = std::get<AdamWOptimizer>(optimizer_)
-               .UpdateParameters(weights_, bias_, weights_gradient_,
-                                 bias_gradient_, batch_size);
-  weights_ = params.weights;
-  bias_ = params.bias;
+//void Layer::UpdateParametersMomentum(int batch_size, double learning_rate,
+//                                     double weights_decay) {
+//  //TODO: Order of update and velocity calculation
+//  Parameters params;
+//  params = std::get<MomentumOptimizer>(optimizer_)
+//                          .UpdateParameters(weights_, bias_, weights_gradient_,
+//                                            bias_gradient_, batch_size);
+//
+//  weights_ = params.weights;
+//  bias_ = params.bias;
+////  ApplyWeightsDecay(batch_size, learning_rate, weights_decay);
+////  auto& momentum_opt = std::get<MomentumOptimizer>(optimizer_);
+////  momentum_opt.UpdateVelocity(weights_gradient_, bias_gradient_, learning_rate);
+////  weights_ -= (1.0 / batch_size) * momentum_opt.GetVelocityWeights();
+////  bias_ -= (1.0 / batch_size) * momentum_opt.GetVelocityBias();
+//}
+//
+//void Layer::UpdateParametersMiniBatchGD(int batch_size, double learning_rate,
+//                                        double weights_decay) {
 //  ApplyWeightsDecay(batch_size, learning_rate, weights_decay);
-//  // TODO: CHECK
-//  auto& adam_w_opt = std::get<AdamWOptimizer>(optimizer_);
-//  adam_w_opt.UpdateMoments(weights_gradient_, bias_gradient_);
-//  AdamWMoments corrected_moments = adam_w_opt.ComputeCorrectedMoments();
-//  UpdateWeightsAdamW(batch_size, learning_rate, corrected_moments.m_w,
-//                     corrected_moments.v_w, adam_w_opt.GetEpsilon());
-//  UpdateBiasAdamW(batch_size, learning_rate, corrected_moments.m_b,
-//                  corrected_moments.v_b, adam_w_opt.GetEpsilon());
-}
-
-void Layer::UpdateParametersMomentum(int batch_size, double learning_rate,
-                                     double weights_decay) {
-  //TODO: Order of update and velocity calculation
-  Parameters params;
-  params = std::get<MomentumOptimizer>(optimizer_)
-                          .UpdateParameters(weights_, bias_, weights_gradient_,
-                                            bias_gradient_, batch_size);
-
-  weights_ = params.weights;
-  bias_ = params.bias;
-//  ApplyWeightsDecay(batch_size, learning_rate, weights_decay);
-//  auto& momentum_opt = std::get<MomentumOptimizer>(optimizer_);
-//  momentum_opt.UpdateVelocity(weights_gradient_, bias_gradient_, learning_rate);
-//  weights_ -= (1.0 / batch_size) * momentum_opt.GetVelocityWeights();
-//  bias_ -= (1.0 / batch_size) * momentum_opt.GetVelocityBias();
-}
-
-void Layer::UpdateParametersMiniBatchGD(int batch_size, double learning_rate,
-                                        double weights_decay) {
-  ApplyWeightsDecay(batch_size, learning_rate, weights_decay);
-  weights_ -= (learning_rate / batch_size) * weights_gradient_;
-  bias_ -= (learning_rate / batch_size) * bias_gradient_;
-}
+//  weights_ -= (learning_rate / batch_size) * weights_gradient_;
+//  bias_ -= (learning_rate / batch_size) * bias_gradient_;
+//}
 
 std::string Layer::GetOptimizerType() const {
   if (std::holds_alternative<AdamWOptimizer>(optimizer_)) {

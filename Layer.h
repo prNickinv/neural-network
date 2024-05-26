@@ -11,13 +11,14 @@
 #include "ActivationFunction.h"
 #include "AdamWOptimizer.h"
 #include "GlobalUsings.h"
+#include "MiniBatchGD.h"
 #include "MomentumOptimizer.h"
 
 namespace NeuralNetwork {
 
 class Layer {
   using Optimizer =
-      std::variant<std::monostate, AdamWOptimizer, MomentumOptimizer>;
+      std::variant<std::monostate, AdamWOptimizer, MomentumOptimizer, MiniBatchGD>;
   using RandomGenerator = Eigen::Rand::P8_mt19937_64;
 
  public:
@@ -39,6 +40,8 @@ class Layer {
         .Initialize(weights_.rows(), weights_.cols());
   }
 
+  void SetOptimizer(const MiniBatchGD&);
+
   friend std::ostream& operator<<(std::ostream&, const Layer&);
   friend std::istream& operator>>(std::istream&, Layer&);
 
@@ -51,13 +54,13 @@ class Layer {
                                                     const Matrix&) const;
   void UpdateGradients(const Matrix&, const RowVector&);
 
-  void ApplyWeightsDecay(int, double, double);
-  void UpdateWeightsAdamW(int, double, const Matrix&, const Matrix&, double);
-  void UpdateBiasAdamW(int, double, const Vector&, const Vector&, double);
+  //void ApplyWeightsDecay(int, double, double);
+  //void UpdateWeightsAdamW(int, double, const Matrix&, const Matrix&, double);
+  //void UpdateBiasAdamW(int, double, const Vector&, const Vector&, double);
 
-  void UpdateParametersAdamW(int, double, double);
-  void UpdateParametersMomentum(int, double, double);
-  void UpdateParametersMiniBatchGD(int, double, double);
+  //void UpdateParametersAdamW(int, double, double);
+  //void UpdateParametersMomentum(int, double, double);
+  //void UpdateParametersMiniBatchGD(int, double, double);
 
   std::string GetOptimizerType() const;
 

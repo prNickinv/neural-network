@@ -15,6 +15,7 @@ add_definitions(-DMNIST_DATA_DIR="${MNIST_DATA_DIR}" -DMNIST_FASHION_DATA_DIR="$
 set(NEURAL_NETWORK ${CMAKE_SOURCE_DIR}/ActivationFunction.cpp
         ${CMAKE_SOURCE_DIR}/LossFunction.cpp
         ${CMAKE_SOURCE_DIR}/Layer.cpp
+        ${CMAKE_SOURCE_DIR}/MiniBatchGD.cpp
         ${CMAKE_SOURCE_DIR}/AdamWOptimizer.cpp
         ${CMAKE_SOURCE_DIR}/MomentumOptimizer.cpp
         ${CMAKE_SOURCE_DIR}/Network.cpp
