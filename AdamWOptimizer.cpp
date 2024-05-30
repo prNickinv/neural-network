@@ -132,6 +132,8 @@ Parameters AdamWOptimizer::UpdateParameters(const Matrix& weights,
 }
 
 std::ostream& operator<<(std::ostream& os, const AdamWOptimizer& adam) {
+  os << "AdamW" << std::endl;
+
   //TODO: Place rows and cols in the same line
   os << adam.learning_rate_ << std::endl;
   os << adam.weights_decay_ << std::endl;

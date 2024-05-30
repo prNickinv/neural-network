@@ -29,6 +29,7 @@ Parameters MiniBatchGD::UpdateParameters(const Matrix& weights,
 }
 
 std::ostream& operator<<(std::ostream& os, const MiniBatchGD& mbgd) {
+  os << "MiniBatchGD" << std::endl;
   os << mbgd.learning_rate_ << std::endl;
   os << mbgd.weights_decay_ << std::endl;
   return os;

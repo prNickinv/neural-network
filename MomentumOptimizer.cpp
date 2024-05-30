@@ -101,9 +101,11 @@ Vector MomentumOptimizer::GetVelocityBias() const {
 }
 
 std::ostream& operator<<(std::ostream& os, const MomentumOptimizer& momentum) {
+  os << "Momentum" << std::endl;
   os << momentum.learning_rate_ << std::endl;
   os << momentum.weights_decay_ << std::endl;
   os << momentum.gamma_ << std::endl;
+
   if (momentum.nesterov_ == Nesterov::Enable) {
     os << "nesterov_enable" << std::endl;
   } else {

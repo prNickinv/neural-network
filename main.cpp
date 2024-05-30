@@ -1,11 +1,10 @@
 #include "Except.h"
 #include "MnistTest.h"
 
+
 int main() {
   try {
-    // TODO: Add Tests
-    NeuralNetwork::MnistTest::RunClassicMnistTest();
-    NeuralNetwork::MnistTest::RunFashionMnistTest();
+    NeuralNetwork::MnistTest::RunAllTests();
   } catch (...) {
     Except::React();
   }

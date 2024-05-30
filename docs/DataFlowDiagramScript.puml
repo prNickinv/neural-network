@@ -1,0 +1,46 @@
+@startuml
+
+actor User
+
+circle "Shuffle" as Shuffle
+
+' Data
+database "Training Data" as TrainingData
+database "Validation Data" as ValidationData
+database "Test Data" as TestData
+database "Model ParametersFL" as ModelParameters
+database "Model ParametersLL" as ModelParametersLL
+
+' Entities
+entity "Data" as Data
+entity "OptimizerFL" as OptimizerFL
+entity "OptimizerLL" as OptimizerLL
+entity "Network" as Network
+entity "FirstLayer" as FirstLayer
+entity "LastLayer" as LastLayer
+entity "Loss" as Loss
+
+' Data Flows
+User --> Data: GetData
+Data --> TrainingData
+Data --> ValidationData
+Data --> TestData
+
+User --> Network: Train
+Network --> FirstLayer: Forward
+
+FirstLayer --> ModelParameters
+FirstLayer --> LastLayer
+LastLayer --> ModelParametersLL
+LastLayer --> Network
+
+Loss --> Network
+Network --> LastLayer : Backward
+LastLayer --> FirstLayer
+
+ModelParameters --> OptimizerFL : Update Params
+ModelParametersLL --> OptimizerLL : Update Params
+
+Shuffle --> Network
+
+@enduml
