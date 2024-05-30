@@ -5,7 +5,7 @@
 
 namespace NeuralNetwork::MnistTest {
 
-void RunMnistTest(Data::MnistType, Data::DataProcessing);
+void RunMnistTest(Data::MnistType);
 void RunClassicMnistTest();
 void RunFashionMnistTest();
 void RunAllTests();

@@ -39,9 +39,40 @@ Vectors GenerateInputVectors(
   return input_vectors;
 }
 
+InputTargetPair GetMnistTrain(const Mnist& dataset, Index training_size) {
+  InputTargetPair pair;
+  pair.input =
+      GenerateInputVectors({dataset.training_images.begin(),
+                            dataset.training_images.begin() + training_size});
+  pair.target =
+      GenerateTargets({dataset.training_labels.begin(),
+                       dataset.training_labels.begin() + training_size},
+                      10);
+  return pair;
+}
+
+InputTargetPair GetMnistValidation(const Mnist& dataset, Index training_size,
+                                   Index validation_size) {
+  InputTargetPair pair;
+  pair.input = GenerateInputVectors(
+      {dataset.training_images.begin() + training_size,
+       dataset.training_images.begin() + training_size + validation_size});
+  pair.target = GenerateTargets(
+      {dataset.training_labels.begin() + training_size,
+       dataset.training_labels.begin() + training_size + validation_size},
+      10);
+  return pair;
+}
+
+InputTargetPair GetMnistTest(const Mnist& dataset) {
+  InputTargetPair pair;
+  pair.input = GenerateInputVectors(dataset.test_images);
+  pair.target = GenerateTargets(dataset.test_labels, 10);
+  return pair;
+}
+
 Dataset GetMnistData(MnistType mnist_type, Index training_size,
-                     Index validation_size, Index test_size,
-                     DataProcessing data_processing) {
+                     Index validation_size, Index test_size) {
   assert(training_size + validation_size <= 60000 &&
          "Total number of training and validation samples must be equal or less than 60000!");
 
@@ -54,32 +85,40 @@ Dataset GetMnistData(MnistType mnist_type, Index training_size,
         MNIST_FASHION_DATA_DIR, training_size + validation_size, test_size);
   }
 
-  if (data_processing == DataProcessing::Binarize) {
-    mnist::binarize_dataset(dataset);
-  } else if (data_processing == DataProcessing::Normalize) {
-    mnist::normalize_dataset(dataset);
-  }
+  auto [training_inputs, training_targets] =
+      GetMnistTrain(dataset, training_size);
 
-  Vectors training_inputs =
-      GenerateInputVectors({dataset.training_images.begin(),
-                            dataset.training_images.begin() + training_size});
+  auto [validation_inputs, validation_targets] =
+      GetMnistValidation(dataset, training_size, validation_size);
 
-  Vectors training_targets =
-      GenerateTargets({dataset.training_labels.begin(),
-                       dataset.training_labels.begin() + training_size},
-                      10);
+  auto [test_inputs, test_targets] = GetMnistTest(dataset);
 
-  Vectors validation_inputs = GenerateInputVectors(
-      {dataset.training_images.begin() + training_size,
-       dataset.training_images.begin() + training_size + validation_size});
+  //  if (data_processing == DataProcessing::Binarize) {
+  //    mnist::binarize_dataset(dataset);
+  //  } else if (data_processing == DataProcessing::Normalize) {
+  //    mnist::normalize_dataset(dataset);
+  //  }
 
-  Vectors validation_targets = GenerateTargets(
-      {dataset.training_labels.begin() + training_size,
-       dataset.training_labels.begin() + training_size + validation_size},
-      10);
-
-  Vectors test_inputs = GenerateInputVectors(dataset.test_images);
-  Vectors test_targets = GenerateTargets(dataset.test_labels, 10);
+  //  Vectors training_inputs =
+  //      GenerateInputVectors({dataset.training_images.begin(),
+  //                            dataset.training_images.begin() + training_size});
+  //
+  //  Vectors training_targets =
+  //      GenerateTargets({dataset.training_labels.begin(),
+  //                       dataset.training_labels.begin() + training_size},
+  //                      10);
+  //
+  //  Vectors validation_inputs = GenerateInputVectors(
+  //      {dataset.training_images.begin() + training_size,
+  //       dataset.training_images.begin() + training_size + validation_size});
+  //
+  //  Vectors validation_targets = GenerateTargets(
+  //      {dataset.training_labels.begin() + training_size,
+  //       dataset.training_labels.begin() + training_size + validation_size},
+  //      10);
+  //
+  //  Vectors test_inputs = GenerateInputVectors(dataset.test_images);
+  //  Vectors test_targets = GenerateTargets(dataset.test_labels, 10);
 
   return {training_inputs,    training_targets, validation_inputs,
           validation_targets, test_inputs,      test_targets};

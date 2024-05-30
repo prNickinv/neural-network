@@ -20,16 +20,24 @@ struct Dataset {
   Vectors test_targets;
 };
 
+struct InputTargetPair {
+  Vectors input;
+  Vectors target;
+};
+
 enum class MnistType { Classic, Fashion };
 
-enum class DataProcessing { Normalize, Binarize, None };
+//enum class DataProcessing { Normalize, Binarize, None };
 
 Vector GenerateOneHotVector(unsigned char, Index);
 Vectors GenerateTargets(const std::vector<unsigned char>&, Index);
 Vectors GenerateInputVectors(const std::vector<std::vector<unsigned char>>&);
 
-Dataset GetMnistData(MnistType, Index, Index, Index,
-                     DataProcessing = DataProcessing::None);
+InputTargetPair GetMnistTrain(const Mnist&, Index);
+InputTargetPair GetMnistValidation(const Mnist&, Index, Index);
+InputTargetPair GetMnistTest(const Mnist&);
+
+Dataset GetMnistData(MnistType, Index, Index, Index);
 
 } // namespace NeuralNetwork::Data
 
