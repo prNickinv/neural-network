@@ -70,6 +70,12 @@ class Network {
   void PropagateBack(const RowVector&);
   void UpdateBatchParameters(int);
 
+  bool ValidateAccuracy(const Vectors&, const Vectors&, const LossFunction&,
+                        int, EarlyStopping, double);
+
+  bool ValidateLoss(const Vectors&, const Vectors&, const LossFunction&, int,
+                    EarlyStopping, double);
+
   bool Validate(const Vectors&, const Vectors&, const LossFunction&, int, Task,
                 EarlyStopping, double);
 

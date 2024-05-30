@@ -213,34 +213,79 @@ void Network::UpdateBatchParameters(int batch_size) {
   }
 }
 
-bool Network::Validate(const Vectors& test_inputs, const Vectors& test_targets,
-                       const LossFunction& loss_function, int epoch, Task task,
-                       EarlyStopping early_stop, double threshold) {
-  if (task == Task::SoftMaxCEClassification || task == Task::Classification) {
-    auto [loss, correct_predictions] =
-        TestAccuracy(test_inputs, test_targets, loss_function);
-    double accuracy =
-        static_cast<double>(correct_predictions) / test_inputs.size();
-    std::cout << "Epoch: " << epoch << " Average Loss: " << loss
-              << " Accuracy: " << accuracy << std::endl;
-    std::cout << correct_predictions << " correct predictions out of "
-              << test_inputs.size() << std::endl;
-    std::cout << std::endl;
-    if (early_stop == EarlyStopping::Enable && accuracy >= threshold) {
-      return true;
-    }
-    return false;
-  }
+bool Network::ValidateAccuracy(const Vectors& test_inputs,
+                               const Vectors& test_targets,
+                               const LossFunction& loss_function, int epoch,
+                               EarlyStopping early_stop, double threshold) {
+  auto [loss, correct_predictions] =
+      TestAccuracy(test_inputs, test_targets, loss_function);
+  double accuracy =
+      static_cast<double>(correct_predictions) / test_inputs.size();
 
-  // task == Task::Regression || task == Task::Unspecified
+  std::cout << "Epoch: " << epoch << " Average Loss: " << loss
+            << " Accuracy: " << accuracy << std::endl;
+  std::cout << correct_predictions << " correct predictions out of "
+            << test_inputs.size() << std::endl;
+  std::cout << std::endl;
+
+  return early_stop == EarlyStopping::Enable && accuracy >= threshold;
+}
+
+bool Network::ValidateLoss(const Vectors& test_inputs,
+                           const Vectors& test_targets,
+                           const LossFunction& loss_function, int epoch,
+                           EarlyStopping early_stop, double threshold) {
   double average_loss = TestLoss(test_inputs, test_targets, loss_function);
   std::cout << "Epoch: " << epoch << " Average Loss: " << average_loss
             << std::endl;
   std::cout << std::endl;
-  if (early_stop == EarlyStopping::Enable && average_loss <= threshold) {
-    return true;
-  }
-  return false;
+
+  return early_stop == EarlyStopping::Enable && average_loss <= threshold;
 }
+
+bool Network::Validate(const Vectors& test_inputs, const Vectors& test_targets,
+                       const LossFunction& loss_function, int epoch, Task task,
+                       EarlyStopping early_stop, double threshold) {
+  if (task == Task::SoftMaxCEClassification || task == Task::Classification) {
+    return ValidateAccuracy(test_inputs, test_targets, loss_function, epoch,
+                            early_stop, threshold);
+  }
+
+  // task == Task::Regression || task == Task::Unspecified
+  return ValidateLoss(test_inputs, test_targets, loss_function, epoch, early_stop,
+                      threshold);
+}
+
+//bool Network::Validate(const Vectors& test_inputs, const Vectors& test_targets,
+//                       const LossFunction& loss_function, int epoch, Task task,
+//                       EarlyStopping early_stop, double threshold) {
+//  if (task == Task::SoftMaxCEClassification || task == Task::Classification) {
+//    auto [loss, correct_predictions] =
+//        TestAccuracy(test_inputs, test_targets, loss_function);
+//    double accuracy =
+//        static_cast<double>(correct_predictions) / test_inputs.size();
+//    std::cout << "Epoch: " << epoch << " Average Loss: " << loss
+//              << " Accuracy: " << accuracy << std::endl;
+//    std::cout << correct_predictions << " correct predictions out of "
+//              << test_inputs.size() << std::endl;
+//    std::cout << std::endl;
+//    //return early_stop == EarlyStopping::Enable && accuracy >= threshold;
+//    if (early_stop == EarlyStopping::Enable && accuracy >= threshold) {
+//      return true;
+//    }
+//    return false;
+//  }
+//
+//  // task == Task::Regression || task == Task::Unspecified
+//  double average_loss = TestLoss(test_inputs, test_targets, loss_function);
+//  std::cout << "Epoch: " << epoch << " Average Loss: " << average_loss
+//            << std::endl;
+//  std::cout << std::endl;
+//  //return early_stop == EarlyStopping::Enable && average_loss <= threshold;
+//  if (early_stop == EarlyStopping::Enable && average_loss <= threshold) {
+//    return true;
+//  }
+//  return false;
+//}
 
 } // namespace NeuralNetwork
