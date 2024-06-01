@@ -23,15 +23,6 @@ class AdamWOptimizer {
   explicit AdamWOptimizer(std::istream&);
 
   void Initialize(Index, Index);
-  Matrix ApplyWeightsDecay(const Matrix&, int) const;
-  void UpdateMoments(const Matrix&, const Vector&);
-  AdamWMoments ComputeCorrectedMoments() const;
-  // TODO: Remove
-  double GetEpsilon() const;
-
-  Matrix ComputeNewWeights(const Matrix&, const Matrix&, const Matrix&,
-                           int) const;
-  Vector ComputeNewBias(const Vector&, const Vector&, const Vector&, int) const;
   Parameters UpdateParameters(const Matrix&, const Vector&, const Matrix&,
                               const Vector&, int);
 
@@ -39,6 +30,14 @@ class AdamWOptimizer {
   friend std::istream& operator>>(std::istream&, AdamWOptimizer&);
 
  private:
+  Matrix ApplyWeightsDecay(const Matrix&, int) const;
+  void UpdateMoments(const Matrix&, const Vector&);
+  AdamWMoments ComputeCorrectedMoments() const;
+
+  Matrix ComputeNewWeights(const Matrix&, const Matrix&, const Matrix&,
+                           int) const;
+  Vector ComputeNewBias(const Vector&, const Vector&, const Vector&, int) const;
+
   static constexpr double default_learning_rate_{0.001};
   static constexpr double default_weights_decay_{0.01};
 

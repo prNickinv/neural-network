@@ -11,11 +11,6 @@ MiniBatchGD::MiniBatchGD(std::istream& is) {
   is >> weights_decay_;
 }
 
-Matrix MiniBatchGD::ApplyWeightsDecay(const Matrix& weights,
-                                      int batch_size) const {
-  return weights - (learning_rate_ * weights_decay_ / batch_size) * weights;
-}
-
 Parameters MiniBatchGD::UpdateParameters(const Matrix& weights,
                                          const Vector& bias,
                                          const Matrix& weights_gradient,
@@ -33,6 +28,11 @@ std::ostream& operator<<(std::ostream& os, const MiniBatchGD& mbgd) {
   os << mbgd.learning_rate_ << std::endl;
   os << mbgd.weights_decay_ << std::endl;
   return os;
+}
+
+Matrix MiniBatchGD::ApplyWeightsDecay(const Matrix& weights,
+                                      int batch_size) const {
+  return weights - (learning_rate_ * weights_decay_ / batch_size) * weights;
 }
 
 } // namespace NeuralNetwork

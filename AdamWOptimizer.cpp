@@ -58,54 +58,6 @@ void AdamWOptimizer::Initialize(Index rows, Index cols) {
            Vector::Zero(rows), Vector::Zero(rows)};
 }
 
-Matrix AdamWOptimizer::ApplyWeightsDecay(const Matrix& weights,
-                                         int batch_size) const {
-  return weights - (learning_rate_ * weights_decay_ / batch_size) * weights;
-}
-
-void AdamWOptimizer::UpdateMoments(const Matrix& weights_gradient,
-                                   const Vector& bias_gradient) {
-  ++time_;
-
-  adam_.m_w = beta1_ * adam_.m_w + (1 - beta1_) * weights_gradient;
-  adam_.v_w = beta2_ * adam_.v_w
-      + (1 - beta2_) * weights_gradient.cwiseProduct(weights_gradient);
-  adam_.m_b = beta1_ * adam_.m_b + (1 - beta1_) * bias_gradient;
-  adam_.v_b = beta2_ * adam_.v_b
-      + (1 - beta2_) * bias_gradient.cwiseProduct(bias_gradient);
-}
-
-AdamWMoments AdamWOptimizer::ComputeCorrectedMoments() const {
-  double beta1_t = 1 - std::pow(beta1_, time_);
-  double beta2_t = 1 - std::pow(beta2_, time_);
-
-  return {adam_.m_w / beta1_t, adam_.v_w / beta2_t, adam_.m_b / beta1_t,
-          adam_.v_b / beta2_t};
-}
-
-double AdamWOptimizer::GetEpsilon() const {
-  return epsilon_;
-}
-
-Matrix AdamWOptimizer::ComputeNewWeights(const Matrix& weights,
-                                         const Matrix& m_hat_w,
-                                         const Matrix& v_hat_w,
-                                         int batch_size) const {
-  return weights
-      - (learning_rate_ / batch_size)
-      * m_hat_w.cwiseQuotient(
-          (v_hat_w.cwiseSqrt().array() + epsilon_).matrix());
-}
-
-Vector AdamWOptimizer::ComputeNewBias(const Vector& bias, const Vector& m_hat_b,
-                                      const Vector& v_hat_b,
-                                      int batch_size) const {
-  return bias
-      - (learning_rate_ / batch_size)
-      * m_hat_b.cwiseQuotient(
-          (v_hat_b.cwiseSqrt().array() + epsilon_).matrix());
-}
-
 Parameters AdamWOptimizer::UpdateParameters(const Matrix& weights,
                                             const Vector& bias,
                                             const Matrix& weights_gradient,
@@ -201,6 +153,50 @@ std::istream& operator>>(std::istream& is, AdamWOptimizer& adam) {
     is >> adam.adam_.v_b(i);
   }
   return is;
+}
+
+Matrix AdamWOptimizer::ApplyWeightsDecay(const Matrix& weights,
+                                         int batch_size) const {
+  return weights - (learning_rate_ * weights_decay_ / batch_size) * weights;
+}
+
+void AdamWOptimizer::UpdateMoments(const Matrix& weights_gradient,
+                                   const Vector& bias_gradient) {
+  ++time_;
+
+  adam_.m_w = beta1_ * adam_.m_w + (1 - beta1_) * weights_gradient;
+  adam_.v_w = beta2_ * adam_.v_w
+      + (1 - beta2_) * weights_gradient.cwiseProduct(weights_gradient);
+  adam_.m_b = beta1_ * adam_.m_b + (1 - beta1_) * bias_gradient;
+  adam_.v_b = beta2_ * adam_.v_b
+      + (1 - beta2_) * bias_gradient.cwiseProduct(bias_gradient);
+}
+
+AdamWMoments AdamWOptimizer::ComputeCorrectedMoments() const {
+  double beta1_t = 1 - std::pow(beta1_, time_);
+  double beta2_t = 1 - std::pow(beta2_, time_);
+
+  return {adam_.m_w / beta1_t, adam_.v_w / beta2_t, adam_.m_b / beta1_t,
+          adam_.v_b / beta2_t};
+}
+
+Matrix AdamWOptimizer::ComputeNewWeights(const Matrix& weights,
+                                         const Matrix& m_hat_w,
+                                         const Matrix& v_hat_w,
+                                         int batch_size) const {
+  return weights
+      - (learning_rate_ / batch_size)
+      * m_hat_w.cwiseQuotient(
+          (v_hat_w.cwiseSqrt().array() + epsilon_).matrix());
+}
+
+Vector AdamWOptimizer::ComputeNewBias(const Vector& bias, const Vector& m_hat_b,
+                                      const Vector& v_hat_b,
+                                      int batch_size) const {
+  return bias
+      - (learning_rate_ / batch_size)
+      * m_hat_b.cwiseQuotient(
+          (v_hat_b.cwiseSqrt().array() + epsilon_).matrix());
 }
 
 } // namespace NeuralNetwork

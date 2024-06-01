@@ -15,13 +15,14 @@ class MiniBatchGD {
   MiniBatchGD(double, double);
   explicit MiniBatchGD(std::istream&);
 
-  Matrix ApplyWeightsDecay(const Matrix&, int) const;
   Parameters UpdateParameters(const Matrix&, const Vector&, const Matrix&,
                               const Vector&, int) const;
 
   friend std::ostream& operator<<(std::ostream&, const MiniBatchGD&);
 
  private:
+  Matrix ApplyWeightsDecay(const Matrix&, int) const;
+
   static constexpr double default_learning_rate_{0.01};
   static constexpr double default_weights_decay_{0.0};
 

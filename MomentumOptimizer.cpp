@@ -47,18 +47,6 @@ void MomentumOptimizer::Initialize(Index rows, Index cols) {
   v_b_ = Vector::Zero(rows);
 }
 
-void MomentumOptimizer::UpdateVelocity(const Matrix& weights_gradient,
-                                       const Vector& bias_gradient,
-                                       double learning_rate) {
-  v_w_ = gamma_ * v_w_ - learning_rate * weights_gradient;
-  v_b_ = gamma_ * v_b_ - learning_rate * bias_gradient;
-}
-
-Matrix MomentumOptimizer::ApplyWeightsDecay(const Matrix& weights,
-                                            int batch_size) const {
-  return weights - (learning_rate_ * weights_decay_ / batch_size) * weights;
-}
-
 Parameters MomentumOptimizer::UpdateParameters(const Matrix& weights,
                                                const Vector& bias,
                                                const Matrix& weights_gradient,
@@ -76,7 +64,7 @@ Parameters MomentumOptimizer::UpdateParameters(const Matrix& weights,
 
   Parameters parameters{weights, bias};
   parameters.weights = ApplyWeightsDecay(weights, batch_size);
-  UpdateVelocity(weights_gradient, bias_gradient, learning_rate_);
+  UpdateVelocity(weights_gradient, bias_gradient);
 
   if (nesterov_ == Nesterov::Enable) {
     parameters.weights += (gamma_ / batch_size) * v_w_
@@ -90,14 +78,6 @@ Parameters MomentumOptimizer::UpdateParameters(const Matrix& weights,
   parameters.weights += v_w_ / batch_size;
   parameters.bias += v_b_ / batch_size;
   return parameters;
-}
-
-Matrix MomentumOptimizer::GetVelocityWeights() const {
-  return v_w_;
-}
-
-Vector MomentumOptimizer::GetVelocityBias() const {
-  return v_b_;
 }
 
 std::ostream& operator<<(std::ostream& os, const MomentumOptimizer& momentum) {
@@ -118,6 +98,17 @@ std::ostream& operator<<(std::ostream& os, const MomentumOptimizer& momentum) {
   os << momentum.v_b_ << std::endl;
 
   return os;
+}
+
+Matrix MomentumOptimizer::ApplyWeightsDecay(const Matrix& weights,
+                                            int batch_size) const {
+  return weights - (learning_rate_ * weights_decay_ / batch_size) * weights;
+}
+
+void MomentumOptimizer::UpdateVelocity(const Matrix& weights_gradient,
+                                       const Vector& bias_gradient) {
+  v_w_ = gamma_ * v_w_ - learning_rate_ * weights_gradient;
+  v_b_ = gamma_ * v_b_ - learning_rate_ * bias_gradient;
 }
 
 } // namespace NeuralNetwork
