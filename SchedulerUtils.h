@@ -4,10 +4,11 @@
 #include <variant>
 
 #include "ExponentialDecay.h"
+#include "PolynomialDecay.h"
 
 namespace NeuralNetwork {
 
-using Scheduler = std::variant<double, ExponentialDecay>;
+using Scheduler = std::variant<double, ExponentialDecay, PolynomialDecay>;
 
 namespace SchedulerUtils {
 
