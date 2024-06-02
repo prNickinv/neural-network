@@ -10,6 +10,8 @@ Scheduler GetScheduler(std::istream& is) {
     return ExponentialDecay(is);
   } else if (scheduler_type == "PolynomialDecay") {
     return PolynomialDecay(is);
+  } else if (scheduler_type == "StepDecay") {
+    return StepDecay(is);
   }
 
   double constant_learning_rate;

@@ -7,7 +7,7 @@ namespace NeuralNetwork {
 
 class ExponentialDecay {
  public:
-  ExponentialDecay(double, int, double);
+  ExponentialDecay(double, double);
   explicit ExponentialDecay(std::istream& is);
 
   double GetLearningRate();
@@ -16,7 +16,6 @@ class ExponentialDecay {
 
  private:
   double initial_learning_rate_;
-  int decay_steps_;
   double decay_rate_;
   int step_;
 };

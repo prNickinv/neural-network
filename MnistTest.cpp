@@ -38,9 +38,7 @@ void RunMnistTest(Data::MnistType mnist_type) {
 //                  {ActivationFunction::LeakyReLu(), ActivationFunction::LeakyReLu(),
 //                   ActivationFunction::SoftMax()});
 
-  //network.SetOptimizer(
-  //  AdamWOptimizer(ExponentialDecay(learning_rate, 10000, 0.96), weights_decay, beta1, beta2, epsilon));
-
+  network.SetOptimizer(AdamWOptimizer(StepDecay(learning_rate, 10000, 0.96), weights_decay, beta1, beta2, epsilon));
   //network.SetOptimizer(MomentumOptimizer(learning_rate, weights_decay, 0.9, Nesterov::Enable));
   //  network.Train(train_inputs, train_targets, batch_size, epochs,
   //                LossFunction::CrossEntropyLoss(),
