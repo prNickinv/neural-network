@@ -33,10 +33,10 @@ void RunMnistTest(Data::MnistType mnist_type) {
       Network({784, 25, 100, 10},
               {ActivationFunction::LeakyReLu(), ActivationFunction::LeakyReLu(),
                ActivationFunction::SoftMax()});
-//    auto network =
-//        Network({784, 100, 25, 10},
-//                {ActivationFunction::LeakyReLu(), ActivationFunction::LeakyReLu(),
-//                 ActivationFunction::SoftMax()});
+  //    auto network =
+  //        Network({784, 100, 25, 10},
+  //                {ActivationFunction::LeakyReLu(), ActivationFunction::LeakyReLu(),
+  //                 ActivationFunction::SoftMax()});
 
   network.SetOptimizer(
       AdamWOptimizer(learning_rate, weights_decay, beta1, beta2, epsilon));
@@ -58,10 +58,10 @@ void RunMnistTest(Data::MnistType mnist_type) {
             << static_cast<double>(cor_pred) / test_size << std::endl;
   std::cout << "Correct predictions: " << cor_pred << " out of " << test_size
             << std::endl;
-//
-//    std::ofstream fileout(
-//        "/Users/nikitaartamonov/CLionProjects/network_test.txt");
-//    fileout << network;
+
+  //    std::ofstream fileout(
+  //        "/Users/nikitaartamonov/CLionProjects/network_test.txt");
+  //    fileout << network;
 }
 
 void RunClassicMnistTest() {

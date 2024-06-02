@@ -99,21 +99,6 @@ void Layer::UpdateParameters(int batch_size) {
   };
 
   new_parameters = std::visit(get_new_params, optimizer_);
-  //  if (std::holds_alternative<AdamWOptimizer>(optimizer_)) {
-  //    new_parameters = std::get<AdamWOptimizer>(optimizer_)
-  //                         .UpdateParameters(weights_, bias_, weights_gradient_,
-  //                                           bias_gradient_, batch_size);
-  //
-  //  } else if (std::holds_alternative<MomentumOptimizer>(optimizer_)) {
-  //    new_parameters = std::get<MomentumOptimizer>(optimizer_)
-  //                         .UpdateParameters(weights_, bias_, weights_gradient_,
-  //                                           bias_gradient_, batch_size);
-  //
-  //  } else {
-  //    new_parameters = std::get<MiniBatchGD>(optimizer_)
-  //                         .UpdateParameters(weights_, bias_, weights_gradient_,
-  //                                           bias_gradient_, batch_size);
-  //  }
 
   weights_ = new_parameters.weights;
   bias_ = new_parameters.bias;
@@ -137,16 +122,6 @@ std::ostream& operator<<(std::ostream& os, const Layer& layer) {
     os << opt;
   };
   std::visit(save_optimizer, layer.optimizer_);
-
-  //os << layer.GetOptimizerType() << std::endl;
-
-  //  if (std::holds_alternative<AdamWOptimizer>(layer.optimizer_)) {
-  //    os << std::get<AdamWOptimizer>(layer.optimizer_);
-  //  } else if (std::holds_alternative<MomentumOptimizer>(layer.optimizer_)) {
-  //    os << std::get<MomentumOptimizer>(layer.optimizer_);
-  //  } else {
-  //    os << std::get<MiniBatchGD>(layer.optimizer_);
-  //  }
 
   return os;
 }
