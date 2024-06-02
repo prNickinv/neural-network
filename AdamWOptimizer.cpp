@@ -6,11 +6,11 @@ namespace NeuralNetwork {
 
 AdamWOptimizer::AdamWOptimizer(double learning_rate, double weights_decay,
                                double beta1, double beta2, double epsilon)
-    : learning_rate_{learning_rate},
-      weights_decay_{weights_decay},
-      beta1_{beta1},
-      beta2_{beta2},
-      epsilon_{epsilon} {}
+    : learning_rate_(learning_rate),
+      weights_decay_(weights_decay),
+      beta1_(beta1),
+      beta2_(beta2),
+      epsilon_(epsilon) {}
 
 AdamWOptimizer::AdamWOptimizer(std::istream& is) {
   //is >> learning_rate_;
