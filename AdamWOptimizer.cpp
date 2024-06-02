@@ -13,7 +13,8 @@ AdamWOptimizer::AdamWOptimizer(double learning_rate, double weights_decay,
       epsilon_{epsilon} {}
 
 AdamWOptimizer::AdamWOptimizer(std::istream& is) {
-  is >> learning_rate_;
+  //is >> learning_rate_;
+  learning_rate_ = SchedulerUtils::GetScheduler(is);
   is >> weights_decay_;
 
   is >> beta1_;
@@ -69,17 +70,19 @@ Parameters AdamWOptimizer::UpdateParameters(const Matrix& weights,
   assert(bias.size() == adam_.m_b.size()
          && "Bias and m_b have different dimensions");
 
+  double learning_rate = GetLearningRate();
+
   Parameters parameters{weights, bias};
-  parameters.weights = ApplyWeightsDecay(weights, batch_size);
+  parameters.weights = ApplyWeightsDecay(weights, batch_size, learning_rate);
 
   UpdateMoments(weights_gradient, bias_gradient);
   AdamWMoments corrected_moments = ComputeCorrectedMoments();
 
   parameters.weights =
       ComputeNewWeights(parameters.weights, corrected_moments.m_w,
-                        corrected_moments.v_w, batch_size);
+                        corrected_moments.v_w, batch_size, learning_rate);
   parameters.bias = ComputeNewBias(parameters.bias, corrected_moments.m_b,
-                                   corrected_moments.v_b, batch_size);
+                                   corrected_moments.v_b, batch_size, learning_rate);
   return parameters;
 }
 
@@ -87,7 +90,17 @@ std::ostream& operator<<(std::ostream& os, const AdamWOptimizer& adam) {
   os << "AdamW" << std::endl;
 
   //TODO: Place rows and cols in the same line
-  os << adam.learning_rate_ << std::endl;
+  //os << adam.learning_rate_ << std::endl;
+  if (std::holds_alternative<double>(adam.learning_rate_)) {
+    os << "ConstantLR" << std::endl;
+  }
+  auto save_scheduler =
+      SchedulerUtils::Overload{[&](double lr) { os << lr << std::endl; },
+                               [&](auto& scheduler) {
+                                 os << scheduler;
+                               }};
+  std::visit(save_scheduler, adam.learning_rate_);
+
   os << adam.weights_decay_ << std::endl;
 
   os << adam.beta1_ << std::endl;
@@ -111,53 +124,17 @@ std::ostream& operator<<(std::ostream& os, const AdamWOptimizer& adam) {
   return os;
 }
 
-std::istream& operator>>(std::istream& is, AdamWOptimizer& adam) {
-  is >> adam.learning_rate_;
-  is >> adam.weights_decay_;
-
-  is >> adam.beta1_;
-  is >> adam.beta2_;
-  is >> adam.epsilon_;
-  is >> adam.time_;
-
-  Index rows, cols;
-  is >> rows;
-  is >> cols;
-  adam.adam_.m_w = Matrix::Zero(rows, cols);
-  for (Index i = 0; i < adam.adam_.m_w.rows(); ++i) {
-    for (Index j = 0; j < adam.adam_.m_w.cols(); ++j) {
-      is >> adam.adam_.m_w(i, j);
-    }
-  }
-
-  is >> rows;
-  is >> cols;
-  adam.adam_.v_w = Matrix::Zero(rows, cols);
-  for (Index i = 0; i < adam.adam_.v_w.rows(); ++i) {
-    for (Index j = 0; j < adam.adam_.v_w.cols(); ++j) {
-      is >> adam.adam_.v_w(i, j);
-    }
-  }
-
-  Index size;
-  is >> size;
-  adam.adam_.m_b = Vector::Zero(size);
-  for (Index i = 0; i < adam.adam_.m_b.size(); ++i) {
-    is >> adam.adam_.m_b(i);
-    std::cout << adam.adam_.m_b(i);
-  }
-
-  is >> size;
-  adam.adam_.v_b = Vector::Zero(size);
-  for (Index i = 0; i < adam.adam_.v_b.size(); ++i) {
-    is >> adam.adam_.v_b(i);
-  }
-  return is;
+double AdamWOptimizer::GetLearningRate() {
+  auto get_lr = SchedulerUtils::Overload{[&](double lr) { return lr; },
+                                         [&](auto& scheduler) {
+                                           return scheduler.GetLearningRate();
+                                         }};
+  return std::visit(get_lr, learning_rate_);
 }
 
 Matrix AdamWOptimizer::ApplyWeightsDecay(const Matrix& weights,
-                                         int batch_size) const {
-  return weights - (learning_rate_ * weights_decay_ / batch_size) * weights;
+                                         int batch_size, double learning_rate) const {
+  return weights - (learning_rate * weights_decay_ / batch_size) * weights;
 }
 
 void AdamWOptimizer::UpdateMoments(const Matrix& weights_gradient,
@@ -183,18 +160,18 @@ AdamWMoments AdamWOptimizer::ComputeCorrectedMoments() const {
 Matrix AdamWOptimizer::ComputeNewWeights(const Matrix& weights,
                                          const Matrix& m_hat_w,
                                          const Matrix& v_hat_w,
-                                         int batch_size) const {
+                                         int batch_size, double learning_rate) const {
   return weights
-      - (learning_rate_ / batch_size)
+      - (learning_rate / batch_size)
       * m_hat_w.cwiseQuotient(
           (v_hat_w.cwiseSqrt().array() + epsilon_).matrix());
 }
 
 Vector AdamWOptimizer::ComputeNewBias(const Vector& bias, const Vector& m_hat_b,
                                       const Vector& v_hat_b,
-                                      int batch_size) const {
+                                      int batch_size, double learning_rate) const {
   return bias
-      - (learning_rate_ / batch_size)
+      - (learning_rate / batch_size)
       * m_hat_b.cwiseQuotient(
           (v_hat_b.cwiseSqrt().array() + epsilon_).matrix());
 }

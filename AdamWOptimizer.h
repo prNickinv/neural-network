@@ -6,6 +6,7 @@
 #include <Eigen/Dense>
 
 #include "GlobalUsings.h"
+#include "SchedulerUtils.h"
 
 namespace NeuralNetwork {
 
@@ -22,21 +23,30 @@ class AdamWOptimizer {
   AdamWOptimizer(double, double, double, double, double);
   explicit AdamWOptimizer(std::istream&);
 
+  template<typename SchedulerType>
+  AdamWOptimizer(const SchedulerType& scheduler, double weights_decay,
+                 double beta1, double beta2, double epsilon)
+      : learning_rate_(scheduler),
+        weights_decay_(weights_decay),
+        beta1_(beta1),
+        beta2_(beta2),
+        epsilon_(epsilon) {}
+
   void Initialize(Index, Index);
   Parameters UpdateParameters(const Matrix&, const Vector&, const Matrix&,
                               const Vector&, int);
 
   friend std::ostream& operator<<(std::ostream&, const AdamWOptimizer&);
-  friend std::istream& operator>>(std::istream&, AdamWOptimizer&);
 
  private:
-  Matrix ApplyWeightsDecay(const Matrix&, int) const;
+  double GetLearningRate();
+  Matrix ApplyWeightsDecay(const Matrix&, int, double) const;
   void UpdateMoments(const Matrix&, const Vector&);
   AdamWMoments ComputeCorrectedMoments() const;
 
   Matrix ComputeNewWeights(const Matrix&, const Matrix&, const Matrix&,
-                           int) const;
-  Vector ComputeNewBias(const Vector&, const Vector&, const Vector&, int) const;
+                           int, double) const;
+  Vector ComputeNewBias(const Vector&, const Vector&, const Vector&, int, double) const;
 
   static constexpr double default_learning_rate_{0.001};
   static constexpr double default_weights_decay_{0.01};
@@ -46,7 +56,8 @@ class AdamWOptimizer {
   static constexpr double default_epsilon_{1e-8};
   static constexpr int default_time_{0};
 
-  double learning_rate_{default_learning_rate_};
+  //double learning_rate_{default_learning_rate_};
+  Scheduler learning_rate_{default_learning_rate_};
   double weights_decay_{default_weights_decay_};
 
   double beta1_{default_beta1_};
