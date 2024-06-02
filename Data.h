@@ -27,7 +27,6 @@ struct InputTargetPair {
 
 enum class MnistType { Classic, Fashion };
 
-//enum class DataProcessing { Normalize, Binarize, None };
 
 Vector GenerateOneHotVector(unsigned char, Index);
 Vectors GenerateTargets(const std::vector<unsigned char>&, Index);

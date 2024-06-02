@@ -93,33 +93,6 @@ Dataset GetMnistData(MnistType mnist_type, Index training_size,
 
   auto [test_inputs, test_targets] = GetMnistTest(dataset);
 
-  //  if (data_processing == DataProcessing::Binarize) {
-  //    mnist::binarize_dataset(dataset);
-  //  } else if (data_processing == DataProcessing::Normalize) {
-  //    mnist::normalize_dataset(dataset);
-  //  }
-
-  //  Vectors training_inputs =
-  //      GenerateInputVectors({dataset.training_images.begin(),
-  //                            dataset.training_images.begin() + training_size});
-  //
-  //  Vectors training_targets =
-  //      GenerateTargets({dataset.training_labels.begin(),
-  //                       dataset.training_labels.begin() + training_size},
-  //                      10);
-  //
-  //  Vectors validation_inputs = GenerateInputVectors(
-  //      {dataset.training_images.begin() + training_size,
-  //       dataset.training_images.begin() + training_size + validation_size});
-  //
-  //  Vectors validation_targets = GenerateTargets(
-  //      {dataset.training_labels.begin() + training_size,
-  //       dataset.training_labels.begin() + training_size + validation_size},
-  //      10);
-  //
-  //  Vectors test_inputs = GenerateInputVectors(dataset.test_images);
-  //  Vectors test_targets = GenerateTargets(dataset.test_labels, 10);
-
   return {training_inputs,    training_targets, validation_inputs,
           validation_targets, test_inputs,      test_targets};
 }
