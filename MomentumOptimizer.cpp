@@ -5,13 +5,14 @@ namespace NeuralNetwork {
 //TODO: Should initialize 1x1 v_w_ and v_b_ with zeros here?
 MomentumOptimizer::MomentumOptimizer(double learning_rate, double weights_decay,
                                      double gamma, Nesterov nesterov)
-    : learning_rate_{learning_rate},
-      weights_decay_{weights_decay},
-      gamma_{gamma},
-      nesterov_{nesterov} {}
+    : learning_rate_(learning_rate),
+      weights_decay_(weights_decay),
+      gamma_(gamma),
+      nesterov_(nesterov) {}
 
 MomentumOptimizer::MomentumOptimizer(std::istream& is) {
-  is >> learning_rate_;
+  //is >> learning_rate_;
+  learning_rate_ = SchedulerUtils::GetScheduler(is);
   is >> weights_decay_;
   is >> gamma_;
 
@@ -62,15 +63,17 @@ Parameters MomentumOptimizer::UpdateParameters(const Matrix& weights,
   assert(bias.size() == bias_gradient.size()
          && "Bias and bias_gradient have different dimensions");
 
+  double learning_rate = GetLearningRate();
+
   Parameters parameters{weights, bias};
-  parameters.weights = ApplyWeightsDecay(weights, batch_size);
-  UpdateVelocity(weights_gradient, bias_gradient);
+  parameters.weights = ApplyWeightsDecay(weights, batch_size, learning_rate);
+  UpdateVelocity(weights_gradient, bias_gradient, learning_rate);
 
   if (nesterov_ == Nesterov::Enable) {
     parameters.weights += (gamma_ / batch_size) * v_w_
-        - (learning_rate_ / batch_size) * weights_gradient;
+        - (learning_rate / batch_size) * weights_gradient;
     parameters.bias += (gamma_ / batch_size) * v_b_
-        - (learning_rate_ / batch_size) * bias_gradient;
+        - (learning_rate / batch_size) * bias_gradient;
     return parameters;
   }
 
@@ -82,7 +85,17 @@ Parameters MomentumOptimizer::UpdateParameters(const Matrix& weights,
 
 std::ostream& operator<<(std::ostream& os, const MomentumOptimizer& momentum) {
   os << "Momentum" << std::endl;
-  os << momentum.learning_rate_ << std::endl;
+  //os << momentum.learning_rate_ << std::endl;
+  if (std::holds_alternative<double>(momentum.learning_rate_)) {
+    os << "ConstantLR" << std::endl;
+  }
+  auto save_scheduler =
+      SchedulerUtils::Overload{[&](double lr) { os << lr << std::endl; },
+                               [&](auto& scheduler) {
+                                 os << scheduler;
+                               }};
+  std::visit(save_scheduler, momentum.learning_rate_);
+
   os << momentum.weights_decay_ << std::endl;
   os << momentum.gamma_ << std::endl;
 
@@ -96,19 +109,28 @@ std::ostream& operator<<(std::ostream& os, const MomentumOptimizer& momentum) {
   os << momentum.v_w_ << std::endl;
   os << momentum.v_b_.size() << std::endl;
   os << momentum.v_b_ << std::endl;
-
   return os;
 }
 
+double MomentumOptimizer::GetLearningRate() {
+  auto get_lr = SchedulerUtils::Overload{[&](double lr) { return lr; },
+                                         [&](auto& scheduler) {
+                                           return scheduler.GetLearningRate();
+                                         }};
+  return std::visit(get_lr, learning_rate_);
+}
+
 Matrix MomentumOptimizer::ApplyWeightsDecay(const Matrix& weights,
-                                            int batch_size) const {
-  return weights - (learning_rate_ * weights_decay_ / batch_size) * weights;
+                                            int batch_size,
+                                            double learning_rate) const {
+  return weights - (learning_rate * weights_decay_ / batch_size) * weights;
 }
 
 void MomentumOptimizer::UpdateVelocity(const Matrix& weights_gradient,
-                                       const Vector& bias_gradient) {
-  v_w_ = gamma_ * v_w_ - learning_rate_ * weights_gradient;
-  v_b_ = gamma_ * v_b_ - learning_rate_ * bias_gradient;
+                                       const Vector& bias_gradient,
+                                       double learning_rate) {
+  v_w_ = gamma_ * v_w_ - learning_rate * weights_gradient;
+  v_b_ = gamma_ * v_b_ - learning_rate * bias_gradient;
 }
 
 } // namespace NeuralNetwork

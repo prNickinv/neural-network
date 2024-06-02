@@ -19,7 +19,7 @@ class MiniBatchGD {
   template<typename SchedulerType>
   MiniBatchGD(const SchedulerType& scheduler, double weights_decay)
       : learning_rate_(scheduler),
-        weights_decay_(weights_decay){};
+        weights_decay_(weights_decay) {}
 
   Parameters UpdateParameters(const Matrix&, const Vector&, const Matrix&,
                               const Vector&, int);

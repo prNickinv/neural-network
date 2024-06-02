@@ -18,8 +18,8 @@ void RunMnistTest(Data::MnistType mnist_type) {
   auto [train_inputs, train_targets, val_inputs, val_targets, test_inputs,
         test_targets] =
       Data::GetMnistData(mnist_type, train_size, val_size, test_size);
-  //std::ifstream file("/Users/nikitaartamonov/CLionProjects/network_test.txt");
-  //Network network(file);
+//  std::ifstream file("/Users/nikitaartamonov/CLionProjects/network_test.txt");
+//  Network network(file);
 
   int batch_size = 4;
   double learning_rate = 0.01;
@@ -39,9 +39,9 @@ void RunMnistTest(Data::MnistType mnist_type) {
   //                 ActivationFunction::SoftMax()});
 
   network.SetOptimizer(
-      AdamWOptimizer(learning_rate, weights_decay, beta1, beta2, epsilon));
+    AdamWOptimizer(learning_rate, weights_decay, beta1, beta2, epsilon));
 
-  //network.SetOptimizer(MiniBatchGD(ExponentialDecay(learning_rate, 10000, 0.96), weights_decay));
+  //network.SetOptimizer(MomentumOptimizer(learning_rate, weights_decay, 0.9, Nesterov::Enable));
   //  network.Train(train_inputs, train_targets, batch_size, epochs,
   //                LossFunction::CrossEntropyLoss(),
   //                Task::SoftMaxCEClassification);
@@ -59,9 +59,9 @@ void RunMnistTest(Data::MnistType mnist_type) {
   std::cout << "Correct predictions: " << cor_pred << " out of " << test_size
             << std::endl;
 
-  //std::ofstream fileout(
-  //    "/Users/nikitaartamonov/CLionProjects/network_test.txt");
-  //fileout << network;
+//  std::ofstream fileout(
+//      "/Users/nikitaartamonov/CLionProjects/network_test.txt");
+//  fileout << network;
 }
 
 void RunClassicMnistTest() {
