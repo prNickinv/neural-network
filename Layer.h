@@ -54,8 +54,7 @@ class Layer {
                                                     const Matrix&) const;
   void UpdateGradients(const Matrix&, const RowVector&);
 
-  std::string GetOptimizerType() const;
-
+  static Optimizer GetOptimizer(std::istream&);
   static constexpr int random_seed_{42};
   static RandomGenerator generator_;
 

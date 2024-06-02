@@ -58,15 +58,7 @@ Layer::Layer(std::istream& is, const ActivationFunction& activation_function) {
     activation_function_ = ActivationFunction::GetFunction(activation_type);
   }
 
-  std::string optimizer_type;
-  is >> optimizer_type;
-  if (optimizer_type == "AdamW") {
-    optimizer_ = AdamWOptimizer(is);
-  } else if (optimizer_type == "Momentum") {
-    optimizer_ = MomentumOptimizer(is);
-  } else {
-    optimizer_ = MiniBatchGD(is);
-  }
+  optimizer_ = GetOptimizer(is);
 }
 
 Vector Layer::PushForward(const Vector& input_vector) {
@@ -178,13 +170,15 @@ void Layer::UpdateGradients(const Matrix& activation_jacobian,
   weights_gradient_ += transit_vector * input_vector_.transpose();
 }
 
-std::string Layer::GetOptimizerType() const {
-  if (std::holds_alternative<AdamWOptimizer>(optimizer_)) {
-    return "AdamW";
-  } else if (std::holds_alternative<MomentumOptimizer>(optimizer_)) {
-    return "Momentum";
+Layer::Optimizer Layer::GetOptimizer(std::istream& is) {
+  std::string optimizer_type;
+  is >> optimizer_type;
+  if (optimizer_type == "AdamW") {
+    return AdamWOptimizer(is);
+  } else if (optimizer_type == "Momentum") {
+    return MomentumOptimizer(is);
   } else {
-    return "MiniBatchGD";
+    return MiniBatchGD(is);
   }
 }
 
