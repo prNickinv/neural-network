@@ -37,9 +37,8 @@ class ActivationFunction {
   [[nodiscard]] Matrix ComputeJacobianMatrix(const Vector&) const;
 
   explicit operator bool() const;
-  //TODO: Mark //NOLINT to suppress clang-tidy warning?
-  bool IsActivationFunctionEmpty() const;
-  bool IsActivationDerivativeEmpty() const;
+  [[nodiscard]] bool IsActivationFunctionEmpty() const;
+  [[nodiscard]] bool IsActivationDerivativeEmpty() const;
 
   [[nodiscard]] std::string GetType() const;
   static ActivationFunction GetFunction(const std::string&);
