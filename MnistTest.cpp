@@ -18,50 +18,40 @@ void RunMnistTest(Data::MnistType mnist_type) {
   auto [train_inputs, train_targets, val_inputs, val_targets, test_inputs,
         test_targets] =
       Data::GetMnistData(mnist_type, train_size, val_size, test_size);
-//  std::ifstream file("/Users/nikitaartamonov/CLionProjects/network_test.txt");
-//  Network network(file);
 
-  int batch_size = 4;
   double learning_rate = 0.01;
+  int decay_steps = 10000;
+  double decay_rate = 0.96;
+
   double weights_decay = 0.0001;
   double beta1 = 0.9;
   double beta2 = 0.999;
   double epsilon = 1e-8;
-  int epochs = 5;
 
-//  auto network =
-//      Network({784, 25, 100, 10},
-//              {ActivationFunction::LeakyReLu(), ActivationFunction::LeakyReLu(),
-//               ActivationFunction::SoftMax()});
-      auto network =
-          Network({784, 100, 25, 10},
-                  {ActivationFunction::LeakyReLu(), ActivationFunction::LeakyReLu(),
-                   ActivationFunction::SoftMax()});
+  int batch_size = 4;
+  int epochs = 6;
 
-  network.SetOptimizer(AdamWOptimizer(StepDecay(learning_rate, 10000, 0.96), weights_decay, beta1, beta2, epsilon));
+  auto network =
+      Network({784, 100, 25, 10},
+              {ActivationFunction::LeakyReLu(), ActivationFunction::LeakyReLu(),
+               ActivationFunction::SoftMax()});
+  network.SetOptimizer(
+      AdamWOptimizer(StepDecay(learning_rate, decay_steps, decay_rate),
+                     weights_decay, beta1, beta2, epsilon));
 
-  //network.SetOptimizer(NAdamOptimizer(StepDecay(learning_rate, 10000, 0.96), weights_decay, beta1, beta2, epsilon, 0.004));
-  //network.SetOptimizer(MomentumOptimizer(learning_rate, weights_decay, 0.9, Nesterov::Enable));
-  //  network.Train(train_inputs, train_targets, batch_size, epochs,
-  //                LossFunction::CrossEntropyLoss(),
-  //                Task::SoftMaxCEClassification);
-
-  network.Train(train_inputs, train_targets, test_inputs, test_targets,
-                batch_size, epochs, LossFunction::CrossEntropyLoss(),
+  network.Train(train_inputs, train_targets, batch_size, epochs,
+                LossFunction::CrossEntropyLoss(),
                 Task::SoftMaxCEClassification);
-
-  auto [loss, cor_pred] = network.TestAccuracy(
+  auto [loss, correct_predictions] = network.TestAccuracy(
       test_inputs, test_targets, LossFunction::CrossEntropyLoss());
+
   std::cout << epochs << " epochs completed" << std::endl;
   std::cout << "Loss on test data: " << loss << std::endl;
   std::cout << "Accuracy on test data: "
-            << static_cast<double>(cor_pred) / test_size << std::endl;
-  std::cout << "Correct predictions: " << cor_pred << " out of " << test_size
+            << static_cast<double>(correct_predictions) / test_size
             << std::endl;
-
-//  std::ofstream fileout(
-//      "/Users/nikitaartamonov/CLionProjects/network_test.txt");
-//  fileout << network;
+  std::cout << "Correct predictions: " << correct_predictions << " out of "
+            << test_size << std::endl;
 }
 
 void RunClassicMnistTest() {
