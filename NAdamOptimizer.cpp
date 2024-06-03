@@ -1,5 +1,7 @@
 #include "NAdamOptimizer.h"
 
+#include <cmath>
+
 namespace NeuralNetwork {
 
 NAdamOptimizer::NAdamOptimizer(double learning_rate, double weights_decay,
