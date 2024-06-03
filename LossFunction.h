@@ -24,9 +24,8 @@ class LossFunction {
                                                  const Vector&) const;
 
   explicit operator bool() const;
-  //TODO: Mark //NOLINT to suppress clang-tidy warning?
-  bool IsLossFunctionEmpty() const;
-  bool IsLossDerivativeEmpty() const;
+  [[nodiscard]] bool IsLossFunctionEmpty() const;
+  [[nodiscard]] bool IsLossDerivativeEmpty() const;
 
   static LossFunction MSE();
   static LossFunction CrossEntropyLoss();
