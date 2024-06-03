@@ -4,7 +4,8 @@
 
 namespace NeuralNetwork {
 
-ExponentialDecay::ExponentialDecay(double initial_learning_rate, double decay_rate)
+ExponentialDecay::ExponentialDecay(double initial_learning_rate,
+                                   double decay_rate)
     : initial_learning_rate_(initial_learning_rate),
       decay_rate_(decay_rate),
       step_(0) {}
@@ -16,7 +17,8 @@ ExponentialDecay::ExponentialDecay(std::istream& is) {
 }
 
 double ExponentialDecay::GetLearningRate() {
-  double learning_rate = initial_learning_rate_ * std::exp(-decay_rate_ * step_);
+  double learning_rate =
+      initial_learning_rate_ * std::exp(-decay_rate_ * step_);
   ++step_;
   return learning_rate;
 }

@@ -4,7 +4,8 @@
 
 namespace NeuralNetwork {
 
-StepDecay::StepDecay(double initial_learning_rate, int decay_steps, double decay_rate)
+StepDecay::StepDecay(double initial_learning_rate, int decay_steps,
+                     double decay_rate)
     : initial_learning_rate_(initial_learning_rate),
       decay_steps_(decay_steps),
       decay_rate_(decay_rate),
