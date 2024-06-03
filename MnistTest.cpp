@@ -29,16 +29,18 @@ void RunMnistTest(Data::MnistType mnist_type) {
   double epsilon = 1e-8;
   int epochs = 5;
 
-  auto network =
-      Network({784, 25, 100, 10},
-              {ActivationFunction::LeakyReLu(), ActivationFunction::LeakyReLu(),
-               ActivationFunction::SoftMax()});
-//      auto network =
-//          Network({784, 100, 25, 10},
-//                  {ActivationFunction::LeakyReLu(), ActivationFunction::LeakyReLu(),
-//                   ActivationFunction::SoftMax()});
+//  auto network =
+//      Network({784, 25, 100, 10},
+//              {ActivationFunction::LeakyReLu(), ActivationFunction::LeakyReLu(),
+//               ActivationFunction::SoftMax()});
+      auto network =
+          Network({784, 100, 25, 10},
+                  {ActivationFunction::LeakyReLu(), ActivationFunction::LeakyReLu(),
+                   ActivationFunction::SoftMax()});
 
   network.SetOptimizer(AdamWOptimizer(StepDecay(learning_rate, 10000, 0.96), weights_decay, beta1, beta2, epsilon));
+
+  //network.SetOptimizer(NAdamOptimizer(StepDecay(learning_rate, 10000, 0.96), weights_decay, beta1, beta2, epsilon, 0.004));
   //network.SetOptimizer(MomentumOptimizer(learning_rate, weights_decay, 0.9, Nesterov::Enable));
   //  network.Train(train_inputs, train_targets, batch_size, epochs,
   //                LossFunction::CrossEntropyLoss(),

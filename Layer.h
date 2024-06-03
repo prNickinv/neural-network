@@ -13,12 +13,13 @@
 #include "GlobalUsings.h"
 #include "MiniBatchGD.h"
 #include "MomentumOptimizer.h"
+#include "NAdamOptimizer.h"
 
 namespace NeuralNetwork {
 
 class Layer {
   using Optimizer = std::variant<AdamWOptimizer,
-                                 MomentumOptimizer, MiniBatchGD>;
+                                 MomentumOptimizer, MiniBatchGD, NAdamOptimizer>;
   using RandomGenerator = Eigen::Rand::P8_mt19937_64;
 
  public:

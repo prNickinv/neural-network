@@ -177,6 +177,8 @@ Layer::Optimizer Layer::GetOptimizer(std::istream& is) {
     return AdamWOptimizer(is);
   } else if (optimizer_type == "Momentum") {
     return MomentumOptimizer(is);
+  } else if (optimizer_type == "NAdam") {
+    return NAdamOptimizer(is);
   } else {
     return MiniBatchGD(is);
   }

@@ -121,6 +121,7 @@ std::ostream& operator<<(std::ostream& os, const AdamWOptimizer& adam) {
 
   os << adam.adam_.v_b.size() << std::endl;
   os << adam.adam_.v_b << std::endl;
+
   return os;
 }
 

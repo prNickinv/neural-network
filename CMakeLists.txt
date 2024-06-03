@@ -17,6 +17,7 @@ set(NEURAL_NETWORK ${CMAKE_SOURCE_DIR}/ActivationFunction.cpp
         ${CMAKE_SOURCE_DIR}/Layer.cpp
         ${CMAKE_SOURCE_DIR}/MiniBatchGD.cpp
         ${CMAKE_SOURCE_DIR}/AdamWOptimizer.cpp
+        ${CMAKE_SOURCE_DIR}/NAdamOptimizer.cpp
         ${CMAKE_SOURCE_DIR}/MomentumOptimizer.cpp
         ${CMAKE_SOURCE_DIR}/SchedulerUtils.cpp
         ${CMAKE_SOURCE_DIR}/ExponentialDecay.cpp
