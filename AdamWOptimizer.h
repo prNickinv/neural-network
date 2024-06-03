@@ -11,10 +11,10 @@
 namespace NeuralNetwork {
 
 struct AdamWMoments {
-  Matrix m_w{Matrix::Zero(1, 1)}; // First moment for weights
-  Matrix v_w{Matrix::Zero(1, 1)}; // Second moment for weights
-  Vector m_b{Vector::Zero(1)};    // First moment for bias
-  Vector v_b{Vector::Zero(1)};    // Second moment for bias
+  Matrix m_w; // First moment for weights
+  Matrix v_w; // Second moment for weights
+  Vector m_b; // First moment for bias
+  Vector v_b; // Second moment for bias
 };
 
 class AdamWOptimizer {
@@ -40,13 +40,14 @@ class AdamWOptimizer {
 
  private:
   double GetLearningRate();
-  Matrix ApplyWeightsDecay(const Matrix&, int, double) const;
+  [[nodiscard]] Matrix ApplyWeightsDecay(const Matrix&, int, double) const;
   void UpdateMoments(const Matrix&, const Vector&);
-  AdamWMoments ComputeCorrectedMoments() const;
+  [[nodiscard]] AdamWMoments ComputeCorrectedMoments() const;
 
-  Matrix ComputeNewWeights(const Matrix&, const Matrix&, const Matrix&,
-                           int, double) const;
-  Vector ComputeNewBias(const Vector&, const Vector&, const Vector&, int, double) const;
+  [[nodiscard]] Matrix ComputeNewWeights(const Matrix&, const Matrix&,
+                                         const Matrix&, int, double) const;
+  [[nodiscard]] Vector ComputeNewBias(const Vector&, const Vector&,
+                                      const Vector&, int, double) const;
 
   static constexpr double default_learning_rate_{0.001};
   static constexpr double default_weights_decay_{0.01};
@@ -56,7 +57,6 @@ class AdamWOptimizer {
   static constexpr double default_epsilon_{1e-8};
   static constexpr int default_time_{0};
 
-  //double learning_rate_{default_learning_rate_};
   Scheduler learning_rate_{default_learning_rate_};
   double weights_decay_{default_weights_decay_};
 

@@ -13,7 +13,6 @@ AdamWOptimizer::AdamWOptimizer(double learning_rate, double weights_decay,
       epsilon_(epsilon) {}
 
 AdamWOptimizer::AdamWOptimizer(std::istream& is) {
-  //is >> learning_rate_;
   learning_rate_ = SchedulerUtils::GetScheduler(is);
   is >> weights_decay_;
 
@@ -81,26 +80,24 @@ Parameters AdamWOptimizer::UpdateParameters(const Matrix& weights,
   parameters.weights =
       ComputeNewWeights(parameters.weights, corrected_moments.m_w,
                         corrected_moments.v_w, batch_size, learning_rate);
-  parameters.bias = ComputeNewBias(parameters.bias, corrected_moments.m_b,
-                                   corrected_moments.v_b, batch_size, learning_rate);
+  parameters.bias =
+      ComputeNewBias(parameters.bias, corrected_moments.m_b,
+                     corrected_moments.v_b, batch_size, learning_rate);
   return parameters;
 }
 
 std::ostream& operator<<(std::ostream& os, const AdamWOptimizer& adam) {
   os << "AdamW" << std::endl;
 
-  //TODO: Place rows and cols in the same line
-  //os << adam.learning_rate_ << std::endl;
-  if (std::holds_alternative<double>(adam.learning_rate_)) {
-    os << "ConstantLR" << std::endl;
-  }
-  auto save_scheduler =
-      SchedulerUtils::Overload{[&](double lr) { os << lr << std::endl; },
-                               [&](auto& scheduler) {
-                                 os << scheduler;
-                               }};
+  auto save_scheduler = SchedulerUtils::Overload{[&](double lr) {
+                                                   os << "ConstantLR"
+                                                      << std::endl;
+                                                   os << lr << std::endl;
+                                                 },
+                                                 [&](const auto& scheduler) {
+                                                   os << scheduler;
+                                                 }};
   std::visit(save_scheduler, adam.learning_rate_);
-
   os << adam.weights_decay_ << std::endl;
 
   os << adam.beta1_ << std::endl;
@@ -108,12 +105,10 @@ std::ostream& operator<<(std::ostream& os, const AdamWOptimizer& adam) {
   os << adam.epsilon_ << std::endl;
   os << adam.time_ << std::endl;
 
-  os << adam.adam_.m_w.rows() << std::endl;
-  os << adam.adam_.m_w.cols() << std::endl;
+  os << adam.adam_.m_w.rows() << " " << adam.adam_.m_w.cols() << std::endl;
   os << adam.adam_.m_w << std::endl;
 
-  os << adam.adam_.v_w.rows() << std::endl;
-  os << adam.adam_.v_w.cols() << std::endl;
+  os << adam.adam_.v_w.rows() << " " << adam.adam_.v_w.cols() << std::endl;
   os << adam.adam_.v_w << std::endl;
 
   os << adam.adam_.m_b.size() << std::endl;
@@ -133,8 +128,8 @@ double AdamWOptimizer::GetLearningRate() {
   return std::visit(get_lr, learning_rate_);
 }
 
-Matrix AdamWOptimizer::ApplyWeightsDecay(const Matrix& weights,
-                                         int batch_size, double learning_rate) const {
+Matrix AdamWOptimizer::ApplyWeightsDecay(const Matrix& weights, int batch_size,
+                                         double learning_rate) const {
   return weights - (learning_rate * weights_decay_ / batch_size) * weights;
 }
 
@@ -160,8 +155,8 @@ AdamWMoments AdamWOptimizer::ComputeCorrectedMoments() const {
 
 Matrix AdamWOptimizer::ComputeNewWeights(const Matrix& weights,
                                          const Matrix& m_hat_w,
-                                         const Matrix& v_hat_w,
-                                         int batch_size, double learning_rate) const {
+                                         const Matrix& v_hat_w, int batch_size,
+                                         double learning_rate) const {
   return weights
       - (learning_rate / batch_size)
       * m_hat_w.cwiseQuotient(
@@ -169,8 +164,8 @@ Matrix AdamWOptimizer::ComputeNewWeights(const Matrix& weights,
 }
 
 Vector AdamWOptimizer::ComputeNewBias(const Vector& bias, const Vector& m_hat_b,
-                                      const Vector& v_hat_b,
-                                      int batch_size, double learning_rate) const {
+                                      const Vector& v_hat_b, int batch_size,
+                                      double learning_rate) const {
   return bias
       - (learning_rate / batch_size)
       * m_hat_b.cwiseQuotient(
