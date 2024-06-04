@@ -34,15 +34,17 @@ class MomentumOptimizer {
 
  private:
   double GetLearningRate();
-  Matrix ApplyWeightsDecay(const Matrix&, int, double) const;
+  [[nodiscard]] Matrix ApplyWeightsDecay(const Matrix&, int, double) const;
   void UpdateVelocity(const Matrix&, const Vector&, double);
+
+  Matrix ComputeNesterovUpdateWeights(const Matrix&, int, double);
+  Vector ComputeNesterovUpdateBias(const Vector&, int, double);
 
   static constexpr double default_learning_rate_{0.01};
   static constexpr double default_weights_decay_{0.0};
   static constexpr double default_gamma_{0.9};
   static constexpr Nesterov default_nesterov_{Nesterov::Disable};
 
-  //double learning_rate_{default_learning_rate_};
   Scheduler learning_rate_{default_learning_rate_};
   double weights_decay_{default_weights_decay_};
   double gamma_{default_gamma_};
