@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 #include <Eigen/Dense>
 
-#include "../LossFunction.h"
 #include "../GlobalUsings.h"
+#include "../LossFunction.h"
 
 namespace NeuralNetwork {
 
@@ -16,7 +16,8 @@ TEST(MSE, Loss) {
 
   double expected_output = 0.0;
   for (Index i = 0; i != size; ++i) {
-    expected_output += (prediction(i) - target(i)) * (prediction(i) - target(i));
+    expected_output +=
+        (prediction(i) - target(i)) * (prediction(i) - target(i));
   }
 
   EXPECT_EQ(expected_output, mse.ComputeLoss(prediction, target));
@@ -67,7 +68,8 @@ TEST(CrossEntropy, Derivative) {
     expected_output(i) = -target(i) / prediction(i);
   }
 
-  EXPECT_EQ(expected_output, cross_entropy.ComputeInitialGradient(prediction, target));
+  EXPECT_EQ(expected_output,
+            cross_entropy.ComputeInitialGradient(prediction, target));
 }
 
 } // namespace NeuralNetwork

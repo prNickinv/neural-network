@@ -242,8 +242,8 @@ bool Network::Validate(const Vectors& test_inputs, const Vectors& test_targets,
   }
 
   // task == Task::Regression || task == Task::Unspecified
-  return ValidateLoss(test_inputs, test_targets, loss_function, epoch, early_stop,
-                      threshold);
+  return ValidateLoss(test_inputs, test_targets, loss_function, epoch,
+                      early_stop, threshold);
 }
 
 } // namespace NeuralNetwork

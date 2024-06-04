@@ -224,7 +224,8 @@ TEST(SoftMax, SoftMaxDerivative) {
   for (Index i = 0; i != size; ++i) {
     for (Index j = 0; j != size; ++j) {
       if (i == j) {
-        expected_output(i, j) = activated_vector(i) * (1.0 - activated_vector(i));
+        expected_output(i, j) =
+            activated_vector(i) * (1.0 - activated_vector(i));
       } else {
         expected_output(i, j) = -activated_vector(i) * activated_vector(j);
       }
