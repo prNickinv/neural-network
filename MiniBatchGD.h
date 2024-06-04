@@ -28,12 +28,11 @@ class MiniBatchGD {
 
  private:
   double GetLearningRate();
-  Matrix ApplyWeightsDecay(const Matrix&, int, double) const;
+  [[nodiscard]] Matrix ApplyWeightsDecay(const Matrix&, int, double) const;
 
   static constexpr double default_learning_rate_{0.01};
   static constexpr double default_weights_decay_{0.0};
 
-  //double learning_rate_{default_learning_rate_};
   Scheduler learning_rate_{default_learning_rate_};
   double weights_decay_{default_weights_decay_};
 };

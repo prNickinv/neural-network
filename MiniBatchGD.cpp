@@ -30,17 +30,16 @@ Parameters MiniBatchGD::UpdateParameters(const Matrix& weights,
 std::ostream& operator<<(std::ostream& os, const MiniBatchGD& mbgd) {
   os << "MiniBatchGD" << std::endl;
 
-  if (std::holds_alternative<double>(mbgd.learning_rate_)) {
-    os << "ConstantLR" << std::endl;
-  }
-  // In case of scheduler the name will be passed by the scheduler itself
-  auto save_scheduler =
-      SchedulerUtils::Overload{[&](double lr) { os << lr << std::endl; },
-                               [&](auto& scheduler) {
-                                 os << scheduler;
-                               }};
+  auto save_scheduler = SchedulerUtils::Overload{[&](double lr) {
+                                                   os << "ConstantLR"
+                                                      << std::endl;
+                                                   os << lr << std::endl;
+                                                 },
+                                                 [&](auto& scheduler) {
+                                                   os << scheduler;
+                                                 }};
   std::visit(save_scheduler, mbgd.learning_rate_);
-  //os << mbgd.learning_rate_ << std::endl;
+
   os << mbgd.weights_decay_ << std::endl;
   return os;
 }
