@@ -11,10 +11,10 @@
 namespace NeuralNetwork {
 
 struct NAdamMoments {
-  Matrix m_w{Matrix::Zero(1, 1)}; // First moment for weights
-  Matrix v_w{Matrix::Zero(1, 1)}; // Second moment for weights
-  Vector m_b{Vector::Zero(1)};    // First moment for bias
-  Vector v_b{Vector::Zero(1)};    // Second moment for bias
+  Matrix m_w; // First moment for weights
+  Matrix v_w; // Second moment for weights
+  Vector m_b; // First moment for bias
+  Vector v_b; // Second moment for bias
 };
 
 class NAdamOptimizer {
@@ -42,18 +42,21 @@ class NAdamOptimizer {
 
  private:
   double GetLearningRate();
-  Matrix ApplyWeightsDecay(const Matrix&, int, double) const;
+  [[nodiscard]] Matrix ApplyWeightsDecay(const Matrix&, int, double) const;
 
   double UpdateU();
   void UpdateMoments(const Matrix&, const Vector&);
 
-  NAdamMoments ComputeCorrectedMoments(double, const Matrix&, const Vector&) const;
-  Parameters ComputeCorrectedM(double, const Matrix&, const Vector&) const;
-  Parameters ComputeCorrectedV() const;
+  [[nodiscard]] NAdamMoments ComputeCorrectedMoments(double, const Matrix&,
+                                                     const Vector&) const;
+  [[nodiscard]] Parameters ComputeCorrectedM(double, const Matrix&,
+                                             const Vector&) const;
+  [[nodiscard]] Parameters ComputeCorrectedV() const;
 
-  Matrix ComputeNewWeights(const Matrix&, const Matrix&, const Matrix&,
-                           int, double) const;
-  Vector ComputeNewBias(const Vector&, const Vector&, const Vector&, int, double) const;
+  [[nodiscard]] Matrix ComputeNewWeights(const Matrix&, const Matrix&,
+                                         const Matrix&, int, double) const;
+  [[nodiscard]] Vector ComputeNewBias(const Vector&, const Vector&,
+                                      const Vector&, int, double) const;
 
   static constexpr double default_learning_rate_{0.001};
   static constexpr double default_weights_decay_{0.01};

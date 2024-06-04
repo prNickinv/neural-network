@@ -89,14 +89,14 @@ Parameters NAdamOptimizer::UpdateParameters(
 std::ostream& operator<<(std::ostream& os, const NAdamOptimizer& nadam) {
   os << "NAdam" << std::endl;
 
-  if (std::holds_alternative<double>(nadam.learning_rate_)) {
-    os << "ConstantLR" << std::endl;
-  }
-  auto save_scheduler =
-      SchedulerUtils::Overload{[&](double lr) { os << lr << std::endl; },
-                               [&](auto& scheduler) {
-                                 os << scheduler;
-                               }};
+  auto save_scheduler = SchedulerUtils::Overload{[&](double lr) {
+                                                   os << "ConstantLR"
+                                                      << std::endl;
+                                                   os << lr << std::endl;
+                                                 },
+                                                 [&](auto& scheduler) {
+                                                   os << scheduler;
+                                                 }};
   std::visit(save_scheduler, nadam.learning_rate_);
 
   os << nadam.weights_decay_ << std::endl;
