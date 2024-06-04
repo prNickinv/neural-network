@@ -31,10 +31,10 @@ Network::Network(
 }
 
 Network::Network(std::istream& is) {
-  int layers_size;
+  std::size_t layers_size;
   is >> layers_size;
   layers_.reserve(layers_size);
-  for (int i = 0; i != layers_size; ++i) {
+  for (std::size_t i = 0; i != layers_size; ++i) {
     layers_.emplace_back(is);
   }
 }
@@ -42,13 +42,14 @@ Network::Network(std::istream& is) {
 Network::Network(
     std::istream& is,
     std::initializer_list<ActivationFunction> activation_functions) {
-  int layers_size;
+  std::size_t layers_size;
   is >> layers_size;
   assert(layers_size == activation_functions.size()
          && "Incorrect number of layers and activation functions");
   layers_.reserve(layers_size);
+
   auto activation_functions_it = activation_functions.begin();
-  for (int i = 0; i != layers_size; ++i, ++activation_functions_it) {
+  for (std::size_t i = 0; i != layers_size; ++i, ++activation_functions_it) {
     layers_.emplace_back(is, *activation_functions_it);
   }
 }
@@ -72,7 +73,6 @@ void Network::Train(const Vectors& training_inputs,
   assert(epochs > 0 && "Invalid number of epochs");
   assert(loss_function && "No loss function provided");
 
-  //TODO: Make static_cast<int>(training_inputs.size()) to suppress clang-tidy warning?
   std::vector<int> view_vector =
       View::GenerateViewVector(training_inputs.size());
   for (int epoch = 0; epoch != epochs; ++epoch) {
@@ -123,12 +123,12 @@ double Network::TestLoss(const Vectors& test_inputs,
                          const Vectors& test_targets,
                          const LossFunction& loss_function) {
   double loss = 0.0;
-  for (int i = 0; i != test_inputs.size(); ++i) {
+  for (std::size_t i = 0; i != test_inputs.size(); ++i) {
     Vector predicted_vector = Predict(test_inputs[i]);
     loss += loss_function.ComputeLoss(predicted_vector, test_targets[i]);
   }
-  //TODO: static_cast<double>(test_inputs.size()) ? Clang-tidy
-  return loss / test_inputs.size();
+
+  return loss / static_cast<double>(test_inputs.size());
 }
 
 ClassificationMetrics Network::TestAccuracy(const Vectors& test_inputs,
@@ -136,7 +136,7 @@ ClassificationMetrics Network::TestAccuracy(const Vectors& test_inputs,
                                             const LossFunction& loss_function) {
   double loss = 0.0;
   int correct_predictions = 0;
-  for (int i = 0; i != test_inputs.size(); ++i) {
+  for (std::size_t i = 0; i != test_inputs.size(); ++i) {
     Vector predicted_vector = Predict(test_inputs[i]);
     loss += loss_function.ComputeLoss(predicted_vector, test_targets[i]);
 
@@ -147,7 +147,7 @@ ClassificationMetrics Network::TestAccuracy(const Vectors& test_inputs,
       ++correct_predictions;
     }
   }
-  return {loss / test_inputs.size(), correct_predictions};
+  return {loss / static_cast<double>(test_inputs.size()), correct_predictions};
 }
 
 std::ostream& operator<<(std::ostream& os, const Network& network) {
@@ -160,7 +160,7 @@ std::ostream& operator<<(std::ostream& os, const Network& network) {
 }
 
 std::istream& operator>>(std::istream& is, Network& network) {
-  int layers_size;
+  std::size_t layers_size;
   is >> layers_size;
   network.layers_.resize(layers_size);
   for (auto& layer : network.layers_) {
@@ -173,8 +173,8 @@ void Network::TrainEpoch(const Vectors& training_inputs,
                          const Vectors& training_targets, int batch_size,
                          const LossFunction& loss_function, Task task,
                          const std::vector<int>& view_vector) {
-  for (int i = 0; i != training_inputs.size(); i += batch_size) {
-    for (int j = i; j != i + batch_size; ++j) {
+  for (std::size_t i = 0; i != training_inputs.size(); i += batch_size) {
+    for (std::size_t j = i; j != i + batch_size; ++j) {
       Vector predicted_vector = Predict(training_inputs[view_vector[j]]);
       RowVector output_backprop_vector =
           ProcessOutputLayer(predicted_vector, training_targets[view_vector[j]],
@@ -220,7 +220,7 @@ bool Network::ValidateAccuracy(const Vectors& test_inputs,
   auto [loss, correct_predictions] =
       TestAccuracy(test_inputs, test_targets, loss_function);
   double accuracy =
-      static_cast<double>(correct_predictions) / test_inputs.size();
+      correct_predictions / static_cast<double>(test_inputs.size());
 
   std::cout << "Epoch: " << epoch << " Average Loss: " << loss
             << " Accuracy: " << accuracy << std::endl;

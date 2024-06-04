@@ -18,8 +18,8 @@
 namespace NeuralNetwork {
 
 class Layer {
-  using Optimizer = std::variant<AdamWOptimizer,
-                                 MomentumOptimizer, MiniBatchGD, NAdamOptimizer>;
+  using Optimizer = std::variant<AdamWOptimizer, MomentumOptimizer, MiniBatchGD,
+                                 NAdamOptimizer>;
   using RandomGenerator = Eigen::Rand::P8_mt19937_64;
 
  public:
@@ -48,7 +48,6 @@ class Layer {
 
  private:
   [[nodiscard]] Vector ApplyParameters(const Vector&) const;
-  //TODO: Remove [[nodiscard]]?
   [[nodiscard]] Vector ApplyActivation() const;
 
   [[nodiscard]] RowVector ComputeNextBackpropVector(const RowVector&,
