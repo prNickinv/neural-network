@@ -137,78 +137,53 @@ TEST(LeakyReLu, NegInputDerivative) {
 TEST(Sigmoid, SigmoidActivation) {
   Index size = 5;
   auto sigmoid = ActivationFunction::Sigmoid();
-  auto sigmoid_test_func = [](double x) {
-    return x >= 0.0 ? 1.0 / (1.0 + std::exp(-x))
-                    : std::exp(x) / (1.0 + std::exp(x));
-  };
-
   Vector input(size);
-  input << 1, 2, 3, 4, 5;
-
+  input << 0.43, -124.4, 12.34, -0.56, 1.3;
   Vector expected_output(size);
   for (Index i = 0; i != size; ++i) {
-    expected_output(i) = sigmoid_test_func(input(i));
+    expected_output(i) = 1.0 / (1.0 + std::exp(-input(i)));
   }
-
   EXPECT_EQ(expected_output, sigmoid.Activate(input));
 }
 
 TEST(Sigmoid, SigmoidDerivative) {
   Index size = 5;
   auto sigmoid = ActivationFunction::Sigmoid();
-  auto sigmoid_test_func = [](double x) {
-    return x >= 0.0 ? 1.0 / (1.0 + std::exp(-x))
-                    : std::exp(x) / (1.0 + std::exp(x));
-  };
-
-  auto sigmoid_derivative_test_func = [sigmoid_test_func](double x) {
-    return sigmoid_test_func(x) * (1.0 - sigmoid_test_func(x));
-  };
-
   Vector input(size);
   input << 42, 12, 955, 12.4, -23.2;
 
   Matrix expected_output = Matrix::Zero(size, size);
   for (Index i = 0; i != size; ++i) {
-    expected_output(i, i) = sigmoid_derivative_test_func(input(i));
+    double sigmoid_value = 1.0 / (1.0 + std::exp(-input(i)));
+    expected_output(i, i) = sigmoid_value * (1.0 - sigmoid_value);
   }
-
   EXPECT_EQ(expected_output, sigmoid.ComputeJacobianMatrix(input));
 }
 
 TEST(Tanh, TanhActivation) {
   Index size = 5;
   auto tanh = ActivationFunction::Tanh();
-  auto tanh_test_func = [](double x) {
-    return std::tanh(x);
-  };
 
   Vector input(size);
   input << -23, 433, 3.13, 632.2, -12.34;
-
   Vector expected_output(size);
   for (Index i = 0; i != size; ++i) {
-    expected_output(i) = tanh_test_func(input(i));
+    expected_output(i) = std::tanh(input(i));
   }
-
   EXPECT_EQ(expected_output, tanh.Activate(input));
 }
 
 TEST(Tanh, TanhDerivative) {
   Index size = 5;
   auto tanh = ActivationFunction::Tanh();
-  auto tanh_derivative_test_func = [](double x) {
-    return 1.0 - std::tanh(x) * std::tanh(x);
-  };
-
   Vector input(size);
   input << 1.0, -4.0, 0.0, 12.0, -5.0;
 
   Matrix expected_output = Matrix::Zero(size, size);
   for (Index i = 0; i != size; ++i) {
-    expected_output(i, i) = tanh_derivative_test_func(input(i));
+    double tanh_value = std::tanh(input(i));
+    expected_output(i, i) = 1.0 - tanh_value * tanh_value;
   }
-
   EXPECT_EQ(expected_output, tanh.ComputeJacobianMatrix(input));
 }
 
