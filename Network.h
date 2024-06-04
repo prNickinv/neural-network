@@ -60,7 +60,6 @@ class Network {
                                      const LossFunction&);
 
   friend std::ostream& operator<<(std::ostream&, const Network&);
-  friend std::istream& operator>>(std::istream&, Network&);
 
  private:
   void TrainEpoch(const Vectors&, const Vectors&, int, const LossFunction&,

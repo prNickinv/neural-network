@@ -44,7 +44,6 @@ class Layer {
   void SetOptimizer(const MiniBatchGD&);
 
   friend std::ostream& operator<<(std::ostream&, const Layer&);
-  friend std::istream& operator>>(std::istream&, Layer&);
 
  private:
   [[nodiscard]] Vector ApplyParameters(const Vector&) const;

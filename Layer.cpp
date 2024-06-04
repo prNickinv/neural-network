@@ -118,34 +118,6 @@ std::ostream& operator<<(std::ostream& os, const Layer& layer) {
   return os;
 }
 
-// TODO: This is not adjusted to work with optimizers
-// TODO: Remove?
-std::istream& operator>>(std::istream& is, Layer& layer) {
-  Index weights_rows, weights_cols;
-  // TODO: Initialize input_vector_ and pre_activated_vector_ with zeros?
-  is >> weights_rows >> weights_cols;
-  layer.weights_.resize(weights_rows, weights_cols);
-  layer.weights_gradient_ = Matrix::Zero(weights_rows, weights_cols);
-  for (Index i = 0; i != weights_rows; ++i) {
-    for (Index j = 0; j != weights_cols; ++j) {
-      is >> layer.weights_(i, j);
-    }
-  }
-
-  Index bias_size;
-  is >> bias_size;
-  layer.bias_.resize(bias_size);
-  layer.bias_gradient_ = Vector::Zero(bias_size);
-  for (Index i = 0; i != bias_size; ++i) {
-    is >> layer.bias_(i);
-  }
-
-  std::string activation_type;
-  is >> activation_type;
-  layer.activation_function_ = ActivationFunction::GetFunction(activation_type);
-  return is;
-}
-
 Vector Layer::ApplyParameters(const Vector& input_vector) const {
   assert(input_vector.size() != 0);
   return weights_ * input_vector + bias_;
