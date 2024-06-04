@@ -9,7 +9,8 @@
 
 namespace NeuralNetwork {
 
-using Scheduler = std::variant<double, ExponentialDecay, PolynomialDecay, StepDecay>;
+using Scheduler =
+    std::variant<double, ExponentialDecay, PolynomialDecay, StepDecay>;
 
 namespace SchedulerUtils {
 
