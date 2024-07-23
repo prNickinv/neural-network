@@ -1,0 +1,58 @@
+@startuml
+
+class Network {
+{field} - layers_
+{method} + Train
+{method} + Predict
+{method} + TestAccuracy, TestLoss
+{method} + SetOptimizer
+}
+
+class Layer {
+{field} - weights_
+{field} - bias
+{field} - activation_function_
+{field} - weights_gradient_
+{field} - bias_gradient_
+{field} - optimizer_ : std::variant
+{method} + UpdateParameters
+}
+
+class LossFunction {}
+Network <|... LossFunction
+
+class AdamWOptimizer {}
+class MomentumOptimizer {}
+class MiniBatchGD {}
+
+class ActivationFunction {}
+Network "1" *--left "1..*" Layer
+Layer *--right ActivationFunction
+
+Layer *-- AdamWOptimizer
+Layer *-- MomentumOptimizer
+Layer *-- MiniBatchGD
+
+note "Optimizers are represented as std::variant" as N1
+N1 ... Layer::optimizer_
+MomentumOptimizer ... N1
+MiniBatchGD ... N1
+AdamWOptimizer ... N1
+
+note "Connected via methods" as N2
+N2 ... Network
+LossFunction ... N2
+
+class View {}
+Network <|... View
+
+class Data {}
+Data <|...up Network
+
+class Except {}
+
+note "These are namespaces" as N3
+N3 ... Data
+N3 ... Except
+
+@enduml
